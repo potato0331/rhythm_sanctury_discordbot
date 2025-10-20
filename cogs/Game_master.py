@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from models import Player
+from models import Player, RoundSong
 
 class GameMaster(commands.Cog):
     # Cog 클래스의 생성자(__init__)에서 bot 객체를 인자로 받습니다.
@@ -43,6 +43,13 @@ class GameMaster(commands.Cog):
             self.bot.player_status.append(player)
         
         await ctx.send(f"게임을 시작하겠습니다. 등록된 플레이어는 {self.bot.playerlist}입니다. 총 라운드 수는 {self.total_round}입니다.")
+        await ctx.send(f"곡 등록을 시작합니다.")
+
+
+    @commands.command(name='곡등록완료')
+    async def _end_song_input(self, ctx: commands.Context):
+        pass
+
 
 
     @commands.command(name='다음라운드')    

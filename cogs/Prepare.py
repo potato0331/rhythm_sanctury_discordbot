@@ -42,4 +42,4 @@ class Prepare(commands.Cog):
 
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Prepare(bot)) # Greetings 클래스의 인스턴스를 생성하여 봇에 Cog로 추가합니다.
+    await bot.add_cog(Prepare(bot)) 
