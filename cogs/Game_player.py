@@ -45,8 +45,11 @@ class GamePlayer(commands.Cog):
         app_commands.Choice(name="후반", value="후반"),
     ])
     async def _register_song(self, interaction: discord.Interaction, 전반후반: str="전반", 곡명: str="A", 곡레벨: str="SC1", 패널티: str="없음"):
+        if not self.bot.game_started:
+            await interaction.response.send_message(f"아직 게임이 시작하지 않았습니다.")
+            return
+        
         my_status = 0
-
         for status in self.bot.player_status:
             if status.name == interaction.user.global_name:
                 my_status = status
