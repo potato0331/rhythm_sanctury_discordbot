@@ -20,7 +20,7 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
         if not interaction.client.game_started:
             await interaction.response.send_message("아직 게임이 시작하지 않았습니다.")
             return
-        if self.bot.current_round != 0:
+        if interaction.client.current_round != 0:
             await interaction.response.send_message(f"이미 라운드가 진행중입니다.")
             return
         
