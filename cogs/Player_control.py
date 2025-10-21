@@ -5,10 +5,35 @@ from discord import app_commands
 
 # 모든 진행자용 명령어를 담을 그룹 클래스를 정의
 # parent를 지정하여 /진행자 OOO 형태의 하위 명령어로
+# 명령어를 그룹으로 묶었다는 이유로, 여기서는 self.bot 대신 interaction.client를 사용한다.
 @app_commands.guild_only() # 이 명령어 그룹은 서버에서만 사용 가능
 @app_commands.default_permissions(manage_guild=True) # 관리자에게만 보이도록 기본값 설정
 class MasterCommandGroup(app_commands.Group, name="진행자", description="게임 진행과 관련된 명령어 모음입니다."):
-    
+
+    @app_commands.command(name="라운드등록", description="(진행자용 기능)진행자 라운드의 선곡/패널티를 입력합니다.")
+    @app_commands.describe(전반후반="전반/후반", 곡명="곡의 제목", 곡레벨="선곡한 곡의 레벨(전반: MX8~15+SC1~11, 후반: SC8~15)", 패널티="그 라운드의 패널티")
+    @app_commands.choices(전반후반=[
+        app_commands.Choice(name="전반", value="전반"),
+        app_commands.Choice(name="후반", value="후반"),
+    ])
+    async def _master_register_song(self, interaction: discord.Interaction, 전반후반: str="전반", 곡명: str="A", 곡레벨: str="SC1", 패널티: str="없음"):
+        if not interaction.client.game_started:
+            await interaction.response.send_message("아직 게임이 시작하지 않았습니다.")
+            return
+        if self.bot.current_round != 0:
+            await interaction.response.send_message(f"이미 라운드가 진행중입니다.")
+            return
+        
+        if 전반후반 == "전반":
+            interaction.client.master_first_half = RoundSong(song_name = 곡명, song_level = 곡레벨, round_penalty = 패널티)
+        else:
+            interaction.client.master_second_half = RoundSong(song_name = 곡명, song_level = 곡레벨, round_penalty = 패널티)
+
+        await interaction.response.send_message(f"진행자 라운드의 {전반후반}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
+
+
+
+
     @app_commands.command(name="점수수정", description="(진행자용) 플레이어의 총 점수를 수정합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 점수="수정할 총 점수")
     async def score_manage(self, interaction: discord.Interaction, 이름: str, 점수: int):
@@ -83,6 +108,7 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
             else: 
                 target_status.effect_list.append(효과)
                 await interaction.response.send_message(f"{target_status.name}님에게 {효과}를 추가했습니다.",ephemeral = True)
+
 
 class PlayerControl(commands.Cog):
     def __init__(self, bot: commands.Bot):

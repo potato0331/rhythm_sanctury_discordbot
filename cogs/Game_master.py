@@ -13,13 +13,15 @@ class GameMaster(commands.Cog):
         self.MASTER_ROUND_ON_FIRST_ROUND = 0 #0또는 1
         self.MASTER_ROUND_ON_LAST_ROUND = 1 #0또는 1
 
-        # 게임 진행 상태 변수
+        # 게임 진행 관련 변수
         self.bot.player_status: list[Player] = []
+        self.bot.master_first_half = RoundSong(song_name = "", song_level = "", round_penalty = "")
+        self.bot.master_second_half = RoundSong(song_name = "", song_level = "", round_penalty = "")
+        self.bot.current_round = 0 #현재 라운드
+        
+        self.total_round = 0 #총 라운드(자동계산)
+        self.current_half = 1 #1=전반, 2=후반
 
-        self.current_round = 0
-        self.total_round = 0
-        self.current_half = 1
-        self.isscoreinput = False 
 
     @commands.command(name='게임시작')
     async def _start_game(self, ctx: commands.Context):
@@ -31,25 +33,56 @@ class GameMaster(commands.Cog):
             return
         #게임 초기화
         self.bot.game_started = True
-        self.current_round = 0
-
-        #총 라운드 수 계산
-        self.total_round = 2 * len(self.bot.playerlist) + self.MASTER_ROUND_ON_FIRST_ROUND + self.MASTER_ROUND_ON_LAST_ROUND
+        self.bot.current_round = 0
+        self.bot.master_first_half = RoundSong(song_name = "", song_level = "", round_penalty = "")
+        self.bot.master_second_half = RoundSong(song_name = "", song_level = "", round_penalty = "")
 
         #player_status 초기화
         self.bot.player_status = [] 
         for name in self.bot.playerlist:
             player = Player(name=name, initial_coin=self.INITIAL_COIN)
             self.bot.player_status.append(player)
+
+        #총 라운드 수 계산
+        self.total_round = 2 * len(self.bot.playerlist) + self.MASTER_ROUND_ON_FIRST_ROUND + self.MASTER_ROUND_ON_LAST_ROUND
         
         await ctx.send(f"게임을 시작하겠습니다. 등록된 플레이어는 {self.bot.playerlist}입니다. 총 라운드 수는 {self.total_round}입니다.")
         await ctx.send(f"곡 등록을 시작합니다.")
 
 
-    @commands.command(name='곡등록완료')
+    @commands.command(name='곡등록완료') #1라운드 시작 역할을 겸함
     async def _end_song_input(self, ctx: commands.Context):
-        pass
+        if self.bot.current_round != 0:
+            await ctx.send("이미 라운드가 진행중입니다.")
+            return
+        
+        for status in self.bot.player_status:
+            if status.first_half.song_name == "":
+                await ctx.send(f"{status.name}님이 현재 전반전 곡을 등록하지 않았습니다.")
+                return
+            if status.second_half.song_name == "":
+                await ctx.send(f"{status.name}님이 현재 후반전 곡을 등록하지 않았습니다.")
+                return
 
+        if self.bot.master_first_half.song_name == "" and self.MASTER_ROUND_ON_FIRST_ROUND == 1:
+            await ctx.send(f"진행자님이 현재 전반전 곡을 등록하지 않았습니다.")
+            return
+        if self.bot.master_second_half.song_name == "" and self.MASTER_ROUND_ON_LAST_ROUND == 1:
+            await ctx.send(f"진행자님이 현재 후반전 곡을 등록하지 않았습니다.")
+            return
+
+        await ctx.send("곡 등록이 확인돼었습니다.")
+
+        for status in self.bot.player_status: #점수 계산후 총 점수에 합산
+            status.round_multiplier = 0
+            status.round_score = -1 #입력 확인 용으로 음수인 -1을 기본값으로 잡음
+            status.effect_list = []
+
+        self.bot.current_round = 1
+
+        for status in self.bot.player_status:
+                status.coin += self.ROUND_COIN_FIRST_HALF
+        await ctx.send("1라운드를 시작하겠습니다. 건투를 빕니다.")
 
 
     @commands.command(name='다음라운드')    
@@ -57,57 +90,43 @@ class GameMaster(commands.Cog):
         if not self.bot.game_started:
             await ctx.send("게임이 시작되지 않았습니다.")
             return
-        if not self.isscoreinput and self.current_round != 0:
-            await ctx.send("점수입력을 하지 않았습니다.[!점수등록완료]를 입력하여 점수를 등록합니다")
+
+        if self.bot.current_round == 0:
+            await ctx.send("아직 1라운드도 시작하지 않았습니다.")
             return
+
+        for status in self.bot.player_status:
+            if status.round_score < 0:
+                await ctx.send(f"{status.name}님이 현재 점수를 입력하지 않았거나, 입력한 점수가 음수입니다.")
+                return
+
         
-        if self.current_round == len(self.bot.playerlist) + self.MASTER_ROUND_ON_FIRST_ROUND:
+        if self.bot.current_round == len(self.bot.playerlist) + self.MASTER_ROUND_ON_FIRST_ROUND:
             self.current_half = 2
             await ctx.send(f"전반전이 마무리 돼었습니다. 이제부터는 각 라운드마다 {self.ROUND_COIN_SECOND_HALF}코인이 지급됍니다.")
 
-        if self.current_round != 0:
-            for status in self.bot.player_status:
-                status.score += status.round_multiplier * status.round_score
-                await ctx.send(f"{status.name}님이 {status.round_multiplier} x {status.round_score} = {status.round_multiplier * status.round_score}점을 획득했습니다.")
-                status.round_multiplier = 0
-                status.round_score = -1
-                status.effect_list = []
+        for status in self.bot.player_status: #점수 계산후 총 점수에 합산
+            status.score += status.round_multiplier * status.round_score
+            await ctx.send(f"{status.name}님이 {status.round_multiplier} x {status.round_score} = {status.round_multiplier * status.round_score}점을 획득했습니다.")
+            status.round_multiplier = 0
+            status.round_score = -1 #입력 확인 용으로 음수인 -1을 기본값으로 잡음, 입력한 점수가 음수값이면 점수를 입력하지 않았다고 봄
+            status.effect_list = []
 
-        self.isscoreinput = False
-
-        if self.current_round == self.total_round:
+        if self.bot.current_round == self.total_round:
             await ctx.send("마지막 라운드입니다. [!결과발표]로 결과를 발표합니다.")
             return
-        self.current_round += 1
 
-        if self.current_half == 1:
+        self.bot.current_round += 1
+       
+        if self.current_half == 1: #코인 지급
             for status in self.bot.player_status:
                 status.coin += self.ROUND_COIN_FIRST_HALF
         else:
             for status in self.bot.player_status:
                 status.coin += self.ROUND_COIN_SECOND_HALF
 
-        await ctx.send(f"{self.current_round} 라운드가 시작됩니다.")
+        await ctx.send(f"{self.bot.current_round} 라운드가 시작됩니다.")
 
-
-    @commands.command(name='점수등록완료')    
-    async def _end_score_input(self, ctx: commands.Context):
-        player_inputed_flag = True
-
-        for status in self.bot.player_status:
-            if status.round_score < 0:
-                player_inputed_flag = False
-                await ctx.send(f"{status.name}님이 현재 점수를 입력하지 않았거나, 입력한 점수가 음수입니다.")
-                
-        if player_inputed_flag:
-             self.isscoreinput = True
-             await ctx.send(f"점수 입력이 완료돼었습니다.")
-
-
-    @commands.command(name='강제점수등록완료')   #디버깅용
-    async def _force_end_score_input(self, ctx: commands.Context):
-        self.isscoreinput = True
-        await ctx.send(f"점수 입력이 완료돼었습니다.")
 
     @commands.command(name='플레이어확인')    
     async def _check_player(self, ctx: commands.Context):
@@ -119,7 +138,7 @@ class GameMaster(commands.Cog):
     @commands.command(name='결과발표')    
     async def _show_result(self, ctx: commands.Context):
 
-        if self.current_round < self.total_round:
+        if self.bot.current_round < self.total_round:
             await ctx.send(f"아직 마지막 라운드가 아닙니다.")
             return
         
