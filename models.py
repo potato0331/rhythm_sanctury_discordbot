@@ -23,6 +23,7 @@ class Player:
         self.effect_list: list[str] = []
         self.first_half: RoundSong = RoundSong(song_name = "", song_level = "", round_penalty = "")
         self.second_half: RoundSong = RoundSong(song_name = "", song_level = "", round_penalty = "")
+        self.betting: int = 0
 
     def __repr__(self) -> str:
         """
@@ -30,7 +31,7 @@ class Player:
         """
         return (
             f"{self.name}\n"
-            f"  coin={self.coin}, score={self.score}\n"
+            f"  coin={self.coin}, betting={self.betting}, score={self.score}\n"
             f"  round_score={self.round_score}, round_multiplier={self.round_multiplier}\n"
             f"  effect_list={self.effect_list}\n"
             f"  first_half={self.first_half}\n"

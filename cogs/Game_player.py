@@ -59,7 +59,7 @@ class GamePlayer(commands.Cog):
     @app_commands.describe(점수="이번 라운드 최종 점수")
     async def _input_score(self, interaction: discord.Interaction, 점수: int=-1):
         if self.bot.current_round == 0:
-            await ctx.send("아직 라운드가 시작하지 않았습니다.")
+            await interaction.response.send_message("아직 라운드가 시작하지 않았습니다.")
             return
 
         my_status = 0
@@ -74,7 +74,43 @@ class GamePlayer(commands.Cog):
         else:
             my_status.round_score = 점수
             await interaction.response.send_message(f"{interaction.user.global_name}님이 {점수}점을 등록했습니다.")
-            
+
+
+    @app_commands.command(name="배팅", description="이번 라운드의 배팅액을 입력합니다.")
+    @app_commands.describe(배팅액="이번 라운드의 배팅액")
+    async def _input_betting(self, interaction: discord.Interaction, 배팅액: int = 0):
+        if self.bot.current_round == 0:
+            await interaction.response.send_message("아직 라운드가 시작하지 않았습니다.")
+            return
+
+        my_status = 0
+
+        for status in self.bot.player_status:
+            if status.name == interaction.user.global_name:
+                my_status = status
+                break
+
+        if my_status == 0:
+            await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
+            return
+        
+        if 배팅액 < 1 or 배팅액 > 15:
+            await interaction.response.send_message(f"잘못된 배팅입니다. 배팅은 1코인부터 15코인까지 가능합니다",ephemeral = True)
+            return
+        
+        if 배팅액 > 5 and self.bot.roundplayer.name == my_status.name:
+            await interaction.response.send_message(f"잘못된 배팅입니다. 라운드플레이어는 5코인까지만 베팅할 수 있습니다.",ephemeral = True)
+            return
+        
+        if 배팅액 - my_status.betting > my_status.coin:
+            await interaction.response.send_message(f"코인이 부족합니다.",ephemeral = True)
+            return
+        
+        my_status.coin -= 배팅액 - my_status.betting
+        my_status.betting = 배팅액
+
+        await interaction.response.send_message(f"{my_status.name}님이 배팅을 완료했습니다.")
+        
 
        
     @app_commands.command(name='효과보기', description="현재 플레이어들에게 적용된 효과를 확인합니다.")
@@ -84,7 +120,7 @@ class GamePlayer(commands.Cog):
             await interaction.response.send_message("플레이어 정보가 없습니다.", ephemeral=True)
             return
         if self.bot.current_round == 0:
-            await ctx.send("아직 라운드가 시작하지 않았습니다.")
+            await interaction.response.send_message("아직 라운드가 시작하지 않았습니다.")
             return
 
         embed = discord.Embed(
