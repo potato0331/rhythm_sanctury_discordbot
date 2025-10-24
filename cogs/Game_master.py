@@ -204,7 +204,7 @@ class GameMaster(commands.Cog):
         elif self.bot.current_half == 1:
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half, True)
         else: 
-            await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half, True)
+            await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.second_half, True)
 
         #배팅액 공개
         sorted_players = sorted(self.bot.player_status, key=lambda p: p.betting)
