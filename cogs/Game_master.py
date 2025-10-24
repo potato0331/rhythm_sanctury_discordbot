@@ -132,6 +132,7 @@ class GameMaster(commands.Cog):
             
             # 라운드 상태 초기화
             status.round_multiplier = 0
+            status.betting = 0
             status.round_score = -1
             status.effect_list = []
         await ctx.send("--------------------------------")
@@ -199,7 +200,7 @@ class GameMaster(commands.Cog):
         if self.MASTER_ROUND_ON_FIRST_ROUND == 1 and self.bot.current_round == 1:
             await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_first_half, True)
         elif self.MASTER_ROUND_ON_LAST_ROUND == 1 and self.bot.current_round == self.bot.total_round:
-            await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_secon_half, True)
+            await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_second_half, True)
         elif self.bot.current_half == 1:
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half, True)
         else: 
