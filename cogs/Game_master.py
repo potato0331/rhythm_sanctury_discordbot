@@ -194,29 +194,38 @@ class GameMaster(commands.Cog):
         #패널티 공개(곡 공개함수 재활용)
         if config.MASTER_ROUND_ON_FIRST_ROUND == 1 and self.bot.current_round == 1:
             await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_first_half, True)
+            embed = discord.Embed(
+                title=f"{self.bot.current_round} 라운드",
+                description=f"이번 라운드는 **진행자 라운드**입니다. 모두에게 패널티를 적용합니다.",
+                color=discord.Color.green()
+            )
         elif config.MASTER_ROUND_ON_LAST_ROUND == 1 and self.bot.current_round == self.bot.total_round:
             await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_second_half, True)
-        elif self.bot.current_half == 1:
-            await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half, True)
-        else: 
-            await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.second_half, True)
+            embed = discord.Embed(
+                title=f"{self.bot.current_round} 라운드",
+                description=f"이번 라운드는 **진행자 라운드**입니다. 모두에게 패널티를 적용합니다.",
+                color=discord.Color.green()
+            )
+        else:
+            if self.bot.current_half == 1:
+                await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half, True)
+            else: 
+                await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.second_half, True)
+            embed = discord.Embed(
+                title=f"{self.bot.current_round} 라운드",
+                description=f"이번 라운드의 플레이어는 **{self.bot.roundplayer.name}** 님입니다.",
+                color=discord.Color.green()
+            )
 
         #배팅액 공개
         sorted_players = sorted(self.bot.player_status, key=lambda p: p.betting)
-
-        embed = discord.Embed(
-            title=f"{self.bot.current_round} 라운드",
-            description=f"이번 라운드의 플레이어는 **{self.bot.roundplayer.name}** 님입니다.",
-            color=discord.Color.green()
-        )
         self.anonymous_player_list = []
         betting_message = f"{self.bot.current_round}라운드 배팅액:\n"
-
         for i in range(len(self.bot.player_status)):
             betting_message +=f"{i + 1}번 플레이어: {sorted_players[i].betting}코인\n"
             self.anonymous_player_list.append(sorted_players[i].name)
         await ctx.send(betting_message)
-        
+            
 
     @commands.command(name='저격공개')    
     async def _reveal_player(self, ctx: commands.Context):

@@ -15,7 +15,7 @@ async def on_ready():
     print(f'봇 ID: {bot.user.id}')
     print('------')
     # 봇의 상태 메시지를 설정합니다.
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game("!help 명령어 입력"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game("게임준비완료!"))
 
 # 초기 Cog 로드 함수
 async def load_extensions():
