@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands, ui 
 import asyncio 
 import os
+import config 
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -31,7 +32,7 @@ async def load_extensions():
 
 # 비동기 메인 함수 정의 (봇 실행 및 Cog 로드를 위해)
 async def main():
-    BOT_TOKEN = input("토큰을 입력하세요: ")
+    BOT_TOKEN = config.BOT_TOKEN
 
     async with bot: # bot 객체를 컨텍스트 매니저로 사용하여 안전하게 시작 및 종료
         await load_extensions() # Cog 로드

@@ -4,16 +4,11 @@ from discord.ext import commands
 from models import Player, RoundSong
 import random
 import asyncio # [추가됨] 비동기 sleep을 위해 import
+import config 
 
 class GameMaster(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        # 게임설정값
-        self.INITIAL_COIN = 15
-        self.ROUND_COIN_FIRST_HALF = 5
-        self.ROUND_COIN_SECOND_HALF = 10
-        self.MASTER_ROUND_ON_FIRST_ROUND = 0 # 0 또는 1
-        self.MASTER_ROUND_ON_LAST_ROUND = 1 # 0 또는 1
 
         self.bot.player_status: list[Player] = []
         self.bot.master_first_half = RoundSong(song_name="", song_level="", round_penalty="")
@@ -60,11 +55,11 @@ class GameMaster(commands.Cog):
         # player_status 초기화
         self.bot.player_status = [] 
         for name in self.bot.playerlist:
-            player = Player(name=name, initial_coin=self.INITIAL_COIN)
+            player = Player(name=name, initial_coin = config.INITIAL_COIN)
             self.bot.player_status.append(player)
 
         # 총 라운드 수 계산
-        self.bot.total_round = 2 * len(self.bot.playerlist) + self.MASTER_ROUND_ON_FIRST_ROUND + self.MASTER_ROUND_ON_LAST_ROUND
+        self.bot.total_round = 2 * len(self.bot.playerlist) + config.MASTER_ROUND_ON_FIRST_ROUND + config.MASTER_ROUND_ON_LAST_ROUND
         
         await ctx.send(f"게임을 시작하겠습니다. 등록된 플레이어는 {self.bot.playerlist}입니다. 총 라운드 수는 {self.bot.total_round}입니다.")
         await ctx.send(f"각자 `/선곡등록` 명령어로 전반전/후반전 곡을 등록해주세요.")
@@ -83,9 +78,9 @@ class GameMaster(commands.Cog):
                 return await ctx.send(f"{status.name}님이 현재 후반전 곡을 등록하지 않았습니다.")
 
         # 진행자 라운드 곡 등록 확인
-        if self.MASTER_ROUND_ON_FIRST_ROUND == 1 and self.bot.master_first_half.song_name == "":
+        if config.MASTER_ROUND_ON_FIRST_ROUND == 1 and self.bot.master_first_half.song_name == "":
             return await ctx.send(f"진행자님이 현재 전반전 곡을 등록하지 않았습니다.")
-        if self.MASTER_ROUND_ON_LAST_ROUND == 1 and self.bot.master_second_half.song_name == "":
+        if config.MASTER_ROUND_ON_LAST_ROUND == 1 and self.bot.master_second_half.song_name == "":
             return await ctx.send(f"진행자님이 현재 후반전 곡을 등록하지 않았습니다.")
 
         await ctx.send("곡 등록이 확인되었습니다.")
@@ -98,13 +93,13 @@ class GameMaster(commands.Cog):
             status.round_multiplier = 0
             status.round_score = -1
             status.effect_list = []
-            status.coin += self.ROUND_COIN_FIRST_HALF # 1라운드 코인 지급
+            status.coin += config.ROUND_COIN_FIRST_HALF # 1라운드 코인 지급
 
         self.bot.current_round = 1
         await ctx.send("1라운드를 시작하겠습니다. 건투를 빕니다.")
 
         # 1라운드 플레이어 지정
-        if self.MASTER_ROUND_ON_FIRST_ROUND == 1:
+        if config.MASTER_ROUND_ON_FIRST_ROUND == 1:
             await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_first_half,False)
         else: 
             self.bot.roundplayer = self.bot.player_deck.pop()
@@ -147,7 +142,7 @@ class GameMaster(commands.Cog):
         #전반전이 끝났는지 확인
         if len(self.bot.player_deck) == 0 and self.bot.current_half == 1:
             self.bot.current_half = 2
-            await ctx.send(f"전반전이 종료되었습니다. 이제부터는 각 라운드마다 {self.ROUND_COIN_SECOND_HALF}코인이 지급됩니다.")
+            await ctx.send(f"전반전이 종료되었습니다. 이제부터는 각 라운드마다 {config.ROUND_COIN_SECOND_HALF}코인이 지급됩니다.")
             
             # 후반전 덱 재구성
             self.bot.player_deck = self.bot.player_status.copy()
@@ -156,10 +151,10 @@ class GameMaster(commands.Cog):
         # 코인 지급
         if self.bot.current_half == 1:
             for status in self.bot.player_status:
-                status.coin += self.ROUND_COIN_FIRST_HALF
+                status.coin += config.ROUND_COIN_FIRST_HALF
         else:
             for status in self.bot.player_status:
-                status.coin += self.ROUND_COIN_SECOND_HALF
+                status.coin += config.ROUND_COIN_SECOND_HALF
 
         await ctx.send(f"{self.bot.current_round} 라운드가 시작됩니다.")
 
@@ -170,7 +165,7 @@ class GameMaster(commands.Cog):
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half,False)
 
             # 후반전 마지막 라운드 + 마스터 라운드인 경우     
-        elif len(self.bot.player_deck) == 0 and self.bot.current_half == 2 and self.MASTER_ROUND_ON_LAST_ROUND == 1:
+        elif len(self.bot.player_deck) == 0 and self.bot.current_half == 2 and config.MASTER_ROUND_ON_LAST_ROUND == 1:
             await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_second_half,False) 
 
             # 후반전 일반 라운드
@@ -197,9 +192,9 @@ class GameMaster(commands.Cog):
         await ctx.send(f"{self.bot.current_round}라운드 배팅이 완료돼었습니다. 라운드패널티를 공개합니다.")
 
         #패널티 공개(곡 공개함수 재활용)
-        if self.MASTER_ROUND_ON_FIRST_ROUND == 1 and self.bot.current_round == 1:
+        if config.MASTER_ROUND_ON_FIRST_ROUND == 1 and self.bot.current_round == 1:
             await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_first_half, True)
-        elif self.MASTER_ROUND_ON_LAST_ROUND == 1 and self.bot.current_round == self.bot.total_round:
+        elif config.MASTER_ROUND_ON_LAST_ROUND == 1 and self.bot.current_round == self.bot.total_round:
             await self.song_reveal(ctx, self.bot.masterplayer, self.bot.master_second_half, True)
         elif self.bot.current_half == 1:
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half, True)
