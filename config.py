@@ -1,4 +1,6 @@
 # 게임설정값
+#BOT_TOKEN을 입력해 둔 채로 commit하지 말것!!!!
+
 INITIAL_COIN = 15
 ROUND_COIN_FIRST_HALF = 5
 ROUND_COIN_SECOND_HALF = 10
