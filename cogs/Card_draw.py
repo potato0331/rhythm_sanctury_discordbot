@@ -52,22 +52,23 @@ class CardDraw(commands.Cog):
 
         #카드 공표용 엠베드 제작
         embed = discord.Embed(
-            title=f"{card.name}",   
+            title=f"{card.name}" 
         )
 
         embed.set_author(name=interaction.user.global_name, icon_url=interaction.user.avatar_url)
 
         if card.type == 1:
             embed.color=discord.Color.green()
-        elif card.type ==2:
+        elif card.type == 2:
             embed.color=discord.Color.yellow()
         else:
             embed.color=discord.Color.red()
 
-        embed.add_field(name="효과", value=card.description, inline=True)
-        embed.add_field(name="가산값", value=card.betting_value, inline=True)
         if card.image_file != "":
             embed.set_image(url=card.image_file)
+        embed.add_field(name="효과", value=card.description, inline=True)
+        embed.add_field(name="가산값", value=card.str(card.betting_value), inline=True)
+
 
         await interaction.response.send_message(embed=embed)
 
