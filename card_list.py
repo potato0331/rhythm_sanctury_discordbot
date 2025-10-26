@@ -6,7 +6,7 @@ CARDS = [
         type=1,
         description='플레이어 한명을 지정해, 그 플레이어의 속도를 1.0으로 내립니다.',
         effect_tag='(대상지정)속도1.0',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907885184454836/slow.png',
         betting_value=4,
         card_count=4
     ),
@@ -16,7 +16,7 @@ CARDS = [
         type=1,
         description='플레이어 한명을 지정해, 그 플레이어의 속도를 9.0으로 올립니다',
         effect_tag='(대상지정)속도9.0',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907293301182494/fast.png',
         betting_value=4,
         card_count=4
     ),
@@ -26,7 +26,7 @@ CARDS = [
         type=1,
         description='한 사람을 지정하면, 그 사람은 bga 밝기를 최대로 키우고 기어 투명도를 100%로 설정합니다.',
         effect_tag='(대상지정)밝기,투명도100%',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907178121269309/bga.png',
         betting_value=4,
         card_count=4
     ),
@@ -36,7 +36,7 @@ CARDS = [
         type=1,
         description='패널티 받는 사람을 고를 권리를 뺏어오고 각 기호가 누구인지 알 수 있게 됩니다. 만약 자신이 선곡자라면, 패널티 받는 사람을 한 명 더 선택 할 수 있습니다.',
         effect_tag='(대상지정)궁예',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907365015519273/gungYeah.png',
         betting_value=4,
         card_count=4
     ),
@@ -46,17 +46,17 @@ CARDS = [
         type=1,
         description='즉시 자신에게 적용된 모든 부정적인 효과를 없앱니다. 만약 없앨 효과가 1개면 코인을 3개, 없으면 5개를 얻습니다.',
         effect_tag='디버프해제',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907699183976539/no.png',
         betting_value=1,
         card_count=4
     ),
     Card(
         id=6,
-        name='코인 사이에 "비트"코인',
+        name='코인이 알고보니 비트코인이었네',
         type=1,
         description='6코인을 획득합니다.',
         effect_tag='코인6',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907261126545488/dogi.png',
         betting_value=0,
         card_count=4
     ),
@@ -66,7 +66,7 @@ CARDS = [
         type=1,
         description='(자신을 제외한)랜덤으로 1명을 뽑아 가산값 2를 적용합니다',
         effect_tag='배율5+(대상랜덤)배율2',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907926351679539/some.png',
         betting_value=5,
         card_count=4
     ),
@@ -76,7 +76,7 @@ CARDS = [
         type=1,
         description='다음 찬스카드 구매가격이 2코인 감소합니다.',
         effect_tag='뽑기할인2',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907969003683860/steam.png',
         betting_value=3,
         card_count=4
     ),
@@ -96,7 +96,7 @@ CARDS = [
         type=2,
         description='펀드를 획득합니다. 펀드의 가치는 4코인 부터 시작하며, 라운드가 끝날 때 마다 1/2의 확률로 가치가 1코인 상승하거나 1코인 하락합니다. 원하는 타이밍에 언제든 팔 수 있습니다. 하지만, 가치가 0이된다면 펀드는 파기됩니다.',
         effect_tag='펀드4',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907338289283112/fund.png',
         betting_value=0,
         card_count=4
     ),
@@ -106,7 +106,7 @@ CARDS = [
         type=2,
         description='이 카드를 뽑는 즉시 코인 1개를 다시 받습니다. 6면 주사위를 한 번 돌린 뒤, 나온 숫자만큼 코인을 받습니다.',
         effect_tag='코인1+1d6',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907233469566987/dice.png',
         betting_value=0,
         card_count=4
     ),
@@ -116,7 +116,7 @@ CARDS = [
         type=2,
         description='플레이어 1명을 몰래 지정합니다. 지정된 플레이어가 다음 라운드의 라운드 페널티를 받으면 본인은 3코인을 받습니다',
         effect_tag='(대상지정)픽업',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907401660895232/hyejya.png',
         betting_value=3,
         card_count=4
     ),
@@ -126,7 +126,7 @@ CARDS = [
         type=2,
         description='디맥에서 가장 재미있다고 생각하는 키를 크게 외칩니다. 만약 그 키가 5b나 8b라면 배팅을 4 가산하고, 4b나 6b라면 당신의 신념에 모두가 박수를 칩니다.',
         effect_tag='4키가최고',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907593785180282/light.png',
         betting_value=0,
         card_count=4
     ),
@@ -136,7 +136,7 @@ CARDS = [
         type=2,
         description='찬스카드를 결과를 보지 않고 하나 더 뽑습니다. 결과를 다른 플레이어들에게 먼저 보여줍니다. 반응을 보고 찬스카드를 적용 할 지 안할지 결정합니다. 만일, 적용하지 않기로 했다면, 찬스카드를 추가로 뽑고 적용하기로 할 때 까지 반복합니다.',
         effect_tag='공산당',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907955707478078/soviet.png',
         betting_value=0,
         card_count=4
     ),
@@ -146,7 +146,7 @@ CARDS = [
         type=2,
         description='플레이 중 디코방에 Show time 이 울려퍼집니다',
         effect_tag='(전체)쇼타임',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907874283454546/sadole.png',
         betting_value=4,
         card_count=4
     ),
@@ -156,7 +156,7 @@ CARDS = [
         type=2,
         description='모니터를 끄거나, 눈을 감고 플레이합니다.',
         effect_tag='암흑',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907194387038249/black.png',
         betting_value=10,
         card_count=4
     ),
@@ -166,7 +166,7 @@ CARDS = [
         type=2,
         description='이번 라운드 선곡이 airwave ~extended mix~ 4BMX로 변경됩니다.',
         effect_tag='(전체)에어웨이브4bmx',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907010403631154/airwave.png',
         betting_value=4,
         card_count=4
     ),
@@ -176,7 +176,7 @@ CARDS = [
         type=2,
         description='카드를 뽑은 플레이어의 난이도를 노말로 고정합니다. 해당 플레이어의 모든 키배치(사이드 포함)를 a~z중 랜덤으로 뽑아 원하는 라인에 배치합니다.',
         effect_tag='타자연습',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907982685507596/taja.png',
         betting_value=4,
         card_count=4
     ),
@@ -186,7 +186,7 @@ CARDS = [
         type=2,
         description='본인의 기존 속도에서 속도를 얼마나 올릴지[낮출지] 정합니다. (변화량/2)만큼 베팅을 가산합니다. (소수점 둘째자리에서 반올림). 이 효과가 발동된 라운드는 속도를 강제로 변화시키는 효과가 무효가 됩니다.',
         effect_tag='(효과지정)쫄',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907501204574319/jjol.png',
         betting_value=4,
         card_count=4
     ),
@@ -196,7 +196,7 @@ CARDS = [
         type=2,
         description='본인에게 맥스랜덤을 적용합니다.',
         effect_tag='맥스랜덤',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907611757903943/maxrandom.png',
         betting_value=5,
         card_count=4
     ),
@@ -206,7 +206,7 @@ CARDS = [
         type=2,
         description='모두가 블링크2 옵션을 적용합니다',
         effect_tag='(전체)블링크2',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907453641031842/itachi.png',
         betting_value=4,
         card_count=4
     ),
@@ -216,7 +216,7 @@ CARDS = [
         type=2,
         description='모두 블라인드를 적용합니다. (노트스킨과 기어는 자유롭게 바꾸셔도 좋습니다.)',
         effect_tag='(전체)블라인드',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907374909751398/hanzo.png',
         betting_value=4,
         card_count=4
     ),
@@ -225,8 +225,8 @@ CARDS = [
         name='허허 개판이네',
         type=2,
         description='모든 플레이어는 배치변경, 페이더, 카오스를 모두 적용합니다. 이미 적용되어있는게 있다면 바꾸지 않습니다. 적용할 효과들은 룰렛으로 정합니다. 각각의 효과들은 독립적인 부정적인 효과로 간주합니다.',
-        effect_tag='(전체)룰렛효과',
-        image_file='',
+        effect_tag='(전체)효과룰렛',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907244915818496/dog.png',
         betting_value=4,
         card_count=4
     ),
@@ -236,7 +236,7 @@ CARDS = [
         type=2,
         description='다른 플레이어 하나를 지목합니다. 당신과 그 플레이어의 점수가 모두 0점이라면 둘 모두 퍼펙트 처리됩니다. 만일 한 플레이어가 0점이고, 다른 플레이어의 점수가 0점이 아니라면 0점이 아닌 플레이어는  1250000점 처리되고, 0점인 플레이어는 700000점 처리됩니다. 만일 둘다 0점이 아니라면, 둘 모두 점수가 900000점 처리됩니다. 이 효과는, 점수에 영향을 주는 다른 효과가(77.77% 등) 적용되어있었거나 적용된다면 무효처리 됩니다.',
         effect_tag='(대상지정)죄수의딜레마',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907464525250600/jail.png',
         betting_value=4,
         card_count=4
     ),
@@ -246,7 +246,7 @@ CARDS = [
         type=2,
         description='500000점 이상 800000점 이하의 타깃 스코어를 설정합니다. 모든 플레이어의 이번 라운드의 게임 결과 점수는 1000000-(타깃 스코어와 실제 스코어의 오차)가 됩니다.',
         effect_tag='(전체)(효과지정)77.77%',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431906982796853288/7777.png',
         betting_value=4,
         card_count=4
     ),
@@ -256,7 +256,7 @@ CARDS = [
         type=2,
         description='이번 라운드는 진행자만 플레이합니다. 진행자의 점수를 미리 예측하고, 예측이 가장 가까운 순서대로 100만,90만,80만,70만,60만...의 점수를 획득합니다.',
         effect_tag='(전체)진짜배팅',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907391670194208/horse.png',
         betting_value=4, 
         card_count=4
     ),
@@ -266,7 +266,7 @@ CARDS = [
         type=2,
         description='이번 라운드의 게임이 끝나고 가위바위보를 합니다. 모든 플레이어는 가위바위보를 해서 순위대로 원하는 플레이어의 점수를 자신의 점수로 적용할 수 있습니다. 이미 선택된 대상은 선택할 수 없습니다.',
         effect_tag='(전체)BMK',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907206025973790/bmk.png',
         betting_value=4, 
         card_count=4
     ),
@@ -276,7 +276,7 @@ CARDS = [
         type=2,
         description='진행자가 게임 도중 문제(상식퀴즈 등)를 출제합니다. 가장 먼저 정답을 맞춘 플레이어는 200000점을 이번 플레이 결과에 가산합니다.',
         effect_tag='(전체)퀴즈',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907442832441435/iruburosang.png',
         betting_value=4, 
         card_count=4
     ),
@@ -286,7 +286,7 @@ CARDS = [
         type=2,
         description='(자신을 포함한) 플레이어 중 두명을 지목합니다. 둘은 라운드가 시작하기 전 버서스(키와 티어는 카드 사용자가 선택)를 진행합니다. 승리한 플레이어는 패배한 플레이어에게 이번 라운드 점수 50000점을 빼앗아 옵니다.',
         effect_tag='(대상지정)버서스',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907163248398406/battle.png',
         betting_value=4, 
         card_count=4
     ),
@@ -296,7 +296,7 @@ CARDS = [
         type=2,
         description='모든 플레이어의 이번 라운드의 점수결과에 숫자 "2" 한 개 마다 22222점을 결과에 가산합니다. 추가적으로, 모든 플레이어의 이번 라운드의 점수결과에 숫자 "2" 한 개 마다 22222점을 결과에 가산합니다.',
         effect_tag='(전체)홍진호',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907560449114202/kongkong.png',
         betting_value=4, 
         card_count=4
     ),
@@ -306,7 +306,7 @@ CARDS = [
         type=2,
         description='이모티콘을 한 번 쓸 때마다 3500점 씩 획득합니다.(피버 이모티콘 제외)',
         effect_tag='이모티콘3500',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907473689677916/jjack.png',
         betting_value=4, 
         card_count=4
     ),
@@ -316,7 +316,7 @@ CARDS = [
         type=2,
         description='다른 플레이어 하나를 몰래 지정합니다. 게임 플레이 후에, 대상인 플레이어를 공개하고 50%의 확률로 그 플레이어와 내 점수가 바뀝니다. 만약 다른 점수카드와 중복이 된다면, 큐피드의 화살 적용 직전에 적용됩니다.',
         effect_tag='(대상지정)이지선다',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907530984001616/joker.png',
         betting_value=4, 
         card_count=4
     ),
@@ -326,7 +326,7 @@ CARDS = [
         type=2,
         description='다른 플레이어 하나를 지목합니다. 당신과 그 플레이어의 이번 라운드의 플레이 결과는 둘의 평균값이 됩니다. 이 카드는 다른 모든 점수관련 효과가 적용된 후 마지막에 적용됩니다.',
         effect_tag='(대상지정)큐피트',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907856109666356/qpd.png',
         betting_value=4, 
         card_count=4
     ),
@@ -336,7 +336,7 @@ CARDS = [
         type=2,
         description='카드를 뽑은 플레이어가 홀/짝 중 하나를 정합니다. 게임이 끝나고 코인 배수 적용 직전의 자신의 점수의 홀수 또는 짝수를 맟추면 1코인을 받습니다.',
         effect_tag='(효과지정)홀짝',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907938821472316/sonmogaji.png',
         betting_value=4, 
         card_count=4
     ),
@@ -436,7 +436,7 @@ CARDS = [
         type=3,
         description='애국가를 틀어놓고 플레이 합니다( https://www.youtube.com/watch?v=_fhRBvbTXDI )',
         effect_tag='애국가',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907584431882291/korea.png',
         betting_value=3, 
         card_count=4
     ),
@@ -446,7 +446,7 @@ CARDS = [
         type=3,
         description='마스터 볼륨을 0으로 설정하고 플레이합니다.',
         effect_tag='볼륨0',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431906894695370813/0.png',
         betting_value=3,
         card_count=4
     ),
@@ -456,7 +456,7 @@ CARDS = [
         type=3,
         description='판정 타이밍을 최대치로 설정합니다',
         effect_tag='판정타이밍최대',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907815366070402/ping.png',
         betting_value=3,
         card_count=4
     ),
@@ -464,9 +464,9 @@ CARDS = [
         id=47,
         name='모니터가 너무 작아요',
         type=3,
-        description='640×360 해상도와  Windows디스플레이모드를 적용합니다.',
-        effect_tag='640*360',
-        image_file='',
+        description='640x360 해상도와  Windows디스플레이모드를 적용합니다.',
+        effect_tag='640x360',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907898828652564/small.png',
         betting_value=3, 
         card_count=4
     ),
@@ -476,7 +476,7 @@ CARDS = [
         type=3,
         description='리버스를 적용합니다',
         effect_tag='리버스',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907845947002920/pump.png',
         betting_value=3, 
         card_count=4
     ),
@@ -486,7 +486,7 @@ CARDS = [
         type=3,
         description='Chaos X를 적용합니다.',
         effect_tag='카오스X',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907218315546694/chaos.png',
         betting_value=3, 
         card_count=4
     ),
@@ -496,7 +496,7 @@ CARDS = [
         type=3,
         description='다음 찬스카드 구매가격이 1코인 상승합니다.',
         effect_tag='뽑기할증1',
-        image_file='',
+        image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907422921953360/implation.png',
         betting_value=4, 
         card_count=4
     ),
