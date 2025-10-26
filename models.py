@@ -1,3 +1,14 @@
+class Card:
+    def __init__(self, id: int, name: str, type: int, description: str, image_file: str, effect_tag: str, betting_value: int, card_count: int):
+        self.id = id
+        self.name = name
+        self.type = type #메리트=1, 리스크=2, 패널티=3
+        self.description = description
+        self.effect_tag = effect_tag #player.effectlist에 추가할 내용
+        self.image_file = image_file
+        self.betting_value = betting_value
+        self.card_count = card_count
+
 class RoundSong:
     """
     전반/후반에 등록한 곡과 페널티의 정보입니다.

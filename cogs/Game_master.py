@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from models import Player, RoundSong
 import random
-import asyncio # [추가됨] 비동기 sleep을 위해 import
+import asyncio 
 import config 
 
 class GameMaster(commands.Cog):
@@ -105,6 +105,8 @@ class GameMaster(commands.Cog):
             self.bot.roundplayer = self.bot.player_deck.pop()
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half,False)
 
+        await ctx.send("각자 `/배팅` 명령어로 배팅액을 등록해주세요.")
+
 
     @commands.command(name='다음라운드')    
     async def _next_round(self, ctx: commands.Context):
@@ -172,6 +174,8 @@ class GameMaster(commands.Cog):
         else:
             self.bot.roundplayer = self.bot.player_deck.pop()
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.second_half,False)
+
+        await ctx.send("각자 `/배팅` 명령어로 배팅액을 등록해주세요.")
 
 
     @commands.command(name='배팅완료')    
@@ -273,8 +277,8 @@ class GameMaster(commands.Cog):
         # 최고 점수 동점자 처리 제미나이 이놈 코드 진짜 잘쓰네
         final_winners = [name for name in winners if any(p.name == name and p.score == highest_score for p in sorted_players)]
 
-        await asyncio.sleep(1)
         await ctx.send("--------------------")
+        await asyncio.sleep(1)
         await ctx.send(f"우승자는... **{', '.join(final_winners)}** 님입니다! 축하합니다!")
         await ctx.send(f"게임을 종료합니다. 모두 수고하셨습니다.")
 

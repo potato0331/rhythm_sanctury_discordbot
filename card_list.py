@@ -1,14 +1,4 @@
-class Card:
-    def __init__(self, id: int, name: str, type: int, description: str, image_file: str, effect_tag: str, betting_value: int, card_count: int):
-        self.id = id
-        self.name = name
-        self.type = type #메리트=1, 리스크=2, 패널티=3
-        self.description = description
-        self.effect_tag = effect_tag #player.effectlist에 추가할 내용
-        self.image_file = image_file
-        self.betting_value = betting_value
-        self.card_count = card_count
-
+from models import Card
 CARDS = [
     Card(
         id=1,
@@ -65,7 +55,7 @@ CARDS = [
         name='코인 사이에 "비트"코인',
         type=1,
         description='6코인을 획득합니다.',
-        effect_tag='6코인',
+        effect_tag='코인6',
         image_file='',
         betting_value=0,
         card_count=4
@@ -75,7 +65,7 @@ CARDS = [
         name='소매넣기',
         type=1,
         description='(자신을 제외한)랜덤으로 1명을 뽑아 가산값 2를 적용합니다',
-        effect_tag='(대상랜덤)배율+2',
+        effect_tag='배율5+(대상랜덤)배율2',
         image_file='',
         betting_value=5,
         card_count=4
@@ -115,7 +105,7 @@ CARDS = [
         name='주사위의 신',
         type=2,
         description='이 카드를 뽑는 즉시 코인 1개를 다시 받습니다. 6면 주사위를 한 번 돌린 뒤, 나온 숫자만큼 코인을 받습니다.',
-        effect_tag='1+1d6코인',
+        effect_tag='코인1+1d6',
         image_file='',
         betting_value=0,
         card_count=4

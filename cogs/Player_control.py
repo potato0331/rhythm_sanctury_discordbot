@@ -6,8 +6,9 @@ from discord import app_commands
 # 모든 진행자용 명령어를 담을 그룹 클래스를 정의
 # parent를 지정하여 /진행자 OOO 형태의 하위 명령어로
 # 명령어를 그룹으로 묶었다는 이유로, 여기서는 self.bot 대신 interaction.client를 사용한다.
+
 @app_commands.guild_only() # 이 명령어 그룹은 서버에서만 사용 가능
-@app_commands.default_permissions(manage_guild=True) # 관리자에게만 보이도록 기본값 설정
+@app_commands.default_permissions(manage_guild=True) # 관리자에게만 보이도록 권한 설정
 class MasterCommandGroup(app_commands.Group, name="진행자", description="게임 진행과 관련된 명령어 모음입니다."):
 
     @app_commands.command(name="라운드등록", description="(진행자용 기능)진행자 라운드의 선곡/패널티를 입력합니다.")
@@ -89,16 +90,15 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
             await interaction.response.send_message(f"{target_status.name}님의 배팅 가산값을 {target_status.round_multiplier}에서 {배수}로 수정했습니다.", ephemeral=True)
             target_status.round_multiplier = 배수
 
-    @app_commands.command(name="진행자효과수정", description="(진행자용 기능)원하는 플레이어의 이번 라운드의 적용된 효과를 추가합니다.")
+    @app_commands.command(name="효과수정", description="(진행자용 기능)원하는 플레이어의 이번 라운드의 적용된 효과를 추가합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 추가제거 = "[추가]또는 [제거]입력", 효과="추가하거나 제거할 효과를 정확히")
     @app_commands.choices(추가제거=[
         app_commands.Choice(name="추가", value="추가"),
         app_commands.Choice(name="제거", value="제거"),
     ])
-    
     async def _master_effect_manage(self, interaction: discord.Interaction, 이름: discord.Member, 추가제거: str="추가", 효과: str="효과"):
         target_status = 0
-        for status in self.bot.player_status:
+        for status in interaction.client.player_status:
             if status.name == 이름.global_name:
                 target_status = status
                 break
