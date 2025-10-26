@@ -427,7 +427,7 @@ CARDS = [
         description='이번 라운드는 한 손으로 플레이합니다. 오른손일지 왼손일지는 룰렛으로 결정합니다.',
         effect_tag='원핸드',
         image_file='',
-        betting_value='7', 
+        betting_value=7, 
         card_count=4
     ),
     Card(
