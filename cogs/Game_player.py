@@ -61,6 +61,9 @@ class GamePlayer(commands.Cog):
         if self.bot.current_round == 0:
             await interaction.response.send_message("아직 라운드가 시작하지 않았습니다.")
             return
+        if not self.bot.current_phase == "card":
+            await interaction.response.send_message("지금은 점수를 등록할 수 없습니다.")
+            return
 
         my_status = 0
 
@@ -81,6 +84,9 @@ class GamePlayer(commands.Cog):
     async def _input_betting(self, interaction: discord.Interaction, 배팅액: int = 0):
         if self.bot.current_round == 0:
             await interaction.response.send_message("아직 라운드가 시작하지 않았습니다.")
+            return
+        if not self.bot.current_phase == "betting":
+            await interaction.response.send_message("지금은 베팅할 수 없습니다.")
             return
 
         my_status = 0

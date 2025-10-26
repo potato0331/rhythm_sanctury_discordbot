@@ -18,7 +18,9 @@ class GameMaster(commands.Cog):
         self.bot.current_half = 1
         self.bot.player_deck = [] # 라운드 진행 순서 덱
         self.bot.roundplayer: Player = 0
-        self.bot.is_card_draw_possible = False
+        self.bot.current_phase = "prepare" #prepare ->(곡등록완료)-> /반복/ betting ->(배팅완료)-> penalty ->(저격공개)-> card ->(다음라운드)-> /반복/
+        #current_phase의 수정은 이 파일에서만 이루어지게 함. 
+
 
         self.anonymous_player_list = [] #라운드 패널티 저격할 때, 정렬된 플레이어를 잠깐 저장하는 변수.
 
@@ -105,6 +107,7 @@ class GameMaster(commands.Cog):
             self.bot.roundplayer = self.bot.player_deck.pop()
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.first_half,False)
 
+        self.bot.current_phase = "betting"
         await ctx.send("각자 `/배팅` 명령어로 배팅액을 등록해주세요.")
 
 
@@ -175,6 +178,7 @@ class GameMaster(commands.Cog):
             self.bot.roundplayer = self.bot.player_deck.pop()
             await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.second_half,False)
 
+        self.bot.current_phase = "betting"
         await ctx.send("각자 `/배팅` 명령어로 배팅액을 등록해주세요.")
 
 
@@ -228,8 +232,9 @@ class GameMaster(commands.Cog):
         for i in range(len(self.bot.player_status)):
             betting_message +=f"{i + 1}번 플레이어: {sorted_players[i].betting}코인\n"
             self.anonymous_player_list.append(sorted_players[i].name)
+        self.bot.current_phase = "penalty"
         await ctx.send(betting_message)
-            
+        
 
     @commands.command(name='저격공개')    
     async def _reveal_player(self, ctx: commands.Context):
@@ -240,8 +245,8 @@ class GameMaster(commands.Cog):
             reveal_message +=f"{i + 1}번 플레이어: {self.anonymous_player_list[i]}\n"
         await ctx.send(reveal_message)
     
-        self.bot.is_card_draw_possible = True
-
+        self.bot.current_phase = "card"
+        await ctx.send("지금부터 카드를 뽑을 수 있습니다.")
 
 
     @commands.command(name='플레이어확인')    

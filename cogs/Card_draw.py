@@ -31,8 +31,8 @@ class CardDraw(commands.Cog):
         if my_status == 0:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
             return
-        if not self.bot.is_card_draw_possible:
-            await interaction.response.send_message("지금은 카드를 뽑을 수 없습니다.",ephemeral = True)
+        if not self.bot.current_phase == "card":
+            await interaction.response.send_message("지금은 카드를 뽑을 수 없습니다.")
             return
         if my_status.coin < config.CARD_PRICE:
             await interaction.response.send_message("코인이 부족합니다.",ephemeral = True)
