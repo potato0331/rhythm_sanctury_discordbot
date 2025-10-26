@@ -10,8 +10,9 @@ class CardDraw(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.card_deck: list[Card] = []
+        self.deck_reset()
 
-    async def deck_reset(self):
+    def deck_reset(self):
         for card in card_list.CARDS: #덱 리셋
             for i in range(card.card_count):
                 self.card_deck.append(card)
@@ -42,11 +43,11 @@ class CardDraw(commands.Cog):
 
         #카드 뽑기
         if len(self.card_deck) == 0:
-            await self.deck_reset()
+            self.deck_reset()
         card = self.card_deck.pop()
 
         #카드 효과 적용
-        my_status.round_multiflier += card.betting_value
+        my_status.round_multiplier += card.betting_value
         my_status.effect_list.append(card.effect_tag)
 
         #카드 공표용 엠베드 제작
