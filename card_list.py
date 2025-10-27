@@ -84,10 +84,10 @@ CARDS = [
         id=9,
         name='"줄"',
         type=1,
-        description='이 카드를 가장 먼저 뽑은 플레이어에게 진행자가 [싸이버거 단품]을 선물합니다. 그 이후에 뽑은 플레이어에게는 대신 배팅 가산값을 5 줍니다.',
+        description='게임이 끝나고, 개최자가 이 카드를 뽑은 플레이어 중 1명에게 무작위로 [싸이버거 단품]을 선물합니다.',
         effect_tag='버거',
         image_file='',
-        betting_value=0,
+        betting_value=4,
         card_count=4
     ),
     Card(
