@@ -40,7 +40,7 @@ class GamePlayer(commands.Cog):
         await interaction.response.send_message(f"{my_status.name}님의 {전반후반}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
 
 
-    @app_commands.command(name="상태확인", description="지금 내 점수와 코인 보유량을 조회합니다.")
+    @app_commands.command(name="상태확인", description="지금 내 상태를 조회합니다.")
     async def _check_status(self, interaction: discord.Interaction):
         my_status = 0
 
@@ -52,7 +52,14 @@ class GamePlayer(commands.Cog):
         if my_status == 0:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
         else:
-            await interaction.response.send_message(f"{interaction.user.global_name}님의 코인 보유량: {my_status.coin}, 현재 점수: {my_status.score}",ephemeral = True)
+            await interaction.response.send_message("------------------------------\n"
+                                                    f"{interaction.user.global_name}님\n"
+                                                    f"코인 보유량: {my_status.coin}\n"
+                                                    f"현재 배율: {my_status.round_multiplier}\n"
+                                                    f"현재 점수: {my_status.score}\n"
+                                                    f"이번 라운드 효과: {my_status.effect_list}\n"
+                                                    "------------------------------\n"
+                                                    ,ephemeral = True)
 
 
     @app_commands.command(name="점수입력", description="이번 라운드의 게임 플레이 결과를 입력합니다.")
