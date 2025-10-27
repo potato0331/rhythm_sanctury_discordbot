@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from models import Player, RoundSong
 from discord import app_commands
-import random 
+
 
 class GamePlayer(commands.Cog):
     def __init__(self, bot: commands.Bot):
