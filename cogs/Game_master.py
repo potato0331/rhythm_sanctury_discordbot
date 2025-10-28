@@ -9,36 +9,21 @@ class GameMaster(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-        self.bot.player_status: list[Player] = [] # type: ignore
+        self.bot.player_status = []
         self.bot.current_round = 0
         self.bot.total_round = 0
         self.bot.current_half = 0
         self.bot.player_deck = [] # 라운드 진행 순서 덱
-        self.bot.roundplayer: Player = 0 # type: ignore
+        self.bot.roundplayer = 0 
         self.bot.current_phase = config.Phase.PERPARE #prepare ->(곡등록완료)-> /반복/ betting ->(배팅완료)-> penalty ->(저격공개)-> card ->(다음라운드)-> /반복/
         #current_phase의 수정은 이 파일에서만 이루어지게 함. 
 
 
         self.anonymous_player_list = [] #라운드 패널티 저격할 때, 정렬된 플레이어를 잠깐 저장하는 변수.
 
-
-    async def song_reveal(self, ctx: commands.Context, player: str, song: RoundSong, open_penalty: bool):
-        """곡의 정보 (+패널티)를 임베드로 출력"""
-        embed = discord.Embed(
-            title=f"{self.bot.current_round} 라운드",
-            description=f"이번 라운드의 플레이어는 **{player}** 님입니다.",
-            color=discord.Color.green()
-        )
-        embed.add_field(name="곡명", value=song.song_name, inline=True)
-        embed.add_field(name="레벨", value=song.song_level, inline=True)
-        if open_penalty:
-            embed.add_field(name="패널티", value=song.round_penalty, inline=True)
-        await ctx.send(embed=embed)
-
-
     @commands.command(name='게임시작')
     async def _start_game(self, ctx: commands.Context):
-        if ctx.author.global_name != self.bot.master_player:
+        if ctx.author.global_name != self.bot.master_player.name:
             return await ctx.send(f"{ctx.author.global_name}님은 진행자가 아닙니다.")
         if self.bot.game_started:
             return await ctx.send("게임이 이미 시작했습니다.")
@@ -89,13 +74,15 @@ class GameMaster(commands.Cog):
             status.round_multiplier = 0
             status.round_score = -1
             status.effect_list = []
-            status.coin += config.ROUND_COIN_FIRST_HALF # 1라운드 코인 지급
+            status.coin += config.ROUND_COIN[0]# 1라운드 코인 지급
 
         self.bot.current_round = 1
         await ctx.send("1라운드를 시작하겠습니다. 건투를 빕니다.")
 
         self.bot.roundplayer = self.bot.player_deck.pop()
+        
         await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.songs[0],False)
+        print(2)
 
         self.bot.current_phase = config.Phase.BETTING
         await ctx.send("각자 `/배팅` 명령어로 배팅액을 등록해주세요.")
@@ -137,7 +124,7 @@ class GameMaster(commands.Cog):
         #전반전이 끝났는지 확인
         if len(self.bot.player_deck) == 0 and self.bot.current_half == 0:
             self.bot.current_half = 1
-            await ctx.send(f"전반전이 종료되었습니다. 이제부터는 각 라운드마다 {config.ROUND_COIN_SECOND_HALF}코인이 지급됩니다.")
+            await ctx.send(f"전반전이 종료되었습니다. 이제부터는 각 라운드마다 {config.ROUND_COIN[1]}코인이 지급됩니다.")
 
         # 코인 지급
         for status in self.bot.player_status:
@@ -146,7 +133,7 @@ class GameMaster(commands.Cog):
         await ctx.send(f"{self.bot.current_round} 라운드가 시작됩니다.")
 
         # 다음 라운드 플레이어 지정
-        self.bot.roundplayer = self.bot.player_deck.pop()
+        self.bot.roundplayer = self.bot.player_deck[self.bot.current_round - 1] ###########################################
         await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.songs[self.bot.current_half],False)
 
         self.bot.current_phase = config.Phase.BETTING
@@ -243,14 +230,34 @@ class GameMaster(commands.Cog):
         await ctx.send(f"우승자는... **{', '.join(final_winners)}** 님입니다! 축하합니다!")
         await ctx.send(f"게임을 종료합니다. 모두 수고하셨습니다.")
         
+    async def song_reveal(self, ctx: commands.Context, player: str, song: RoundSong, open_penalty: bool):
+        """곡의 정보 (+패널티)를 임베드로 출력"""
+        print(player, song, open_penalty)
+
+        embed = discord.Embed(
+            title=f"{self.bot.current_round} 라운드",
+            description=f"이번 라운드의 플레이어는 **{player}** 님입니다.",
+            color=discord.Color.green()
+        )
+        embed.add_field(name="곡명", value=song.song_name, inline=True)
+        embed.add_field(name="레벨", value=song.song_level, inline=True)
+        if open_penalty:
+            embed.add_field(name="패널티", value=song.round_penalty, inline=True)
+        await ctx.send(embed=embed)
+
     def __create_deck(self):
         result = []
-        result.append("""$master""")
-        for i in range(1,2):
+        if (config.MASTER_ROUND_ON_FIRST_ROUND == 1):
+            result.append(self.bot.master_player)
+
+        for i in range(2):
             players = self.bot.player_status.copy()
             random.shuffle(players)
             result.extend(players)
-        result.append("""$master""")
+        
+        if (config.MASTER_ROUND_ON_LAST_ROUND == 1):
+            result.append(self.bot.master_player)
+        
         return result
 
 async def setup(bot: commands.Bot):

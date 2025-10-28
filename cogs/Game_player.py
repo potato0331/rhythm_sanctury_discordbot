@@ -28,10 +28,10 @@ class GamePlayer(commands.Cog):
         if my_status == None:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
             return
-        
+       
         my_status.songs[전반후반] = RoundSong(곡명, 곡레벨, 패널티)
-
-        await interaction.response.send_message(f"{my_status.name}님의 {전반후반}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
+ 
+        await interaction.response.send_message(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
 
 
     @app_commands.command(name="상태확인", description="지금 내 상태를 조회합니다.")

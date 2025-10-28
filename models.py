@@ -26,18 +26,6 @@ class User:
         self.name: str = name
         self.songs = [None, None]
 
-class Player(User):
-    """
-    게임에 참여하는 플레이어의 상태를 저장하는 클래스입니다.
-    """
-    def __init__(self, name: str, initial_coin: int):
-        self.name: str = name
-        self.coin: int = initial_coin
-        self.score: int = 0
-        self.round_score: int = 0
-        self.round_multiplier: int = 0
-        self.effect_list: list[str] = []
-        self.betting: int = 0
 
     def __repr__(self) -> str:
         """
@@ -45,9 +33,21 @@ class Player(User):
         """
         return (
             f"{self.name}\n"
-            f"  coin={self.coin}, betting={self.betting}, score={self.score}\n"
-            f"  round_score={self.round_score}, round_multiplier={self.round_multiplier}\n"
-            f"  effect_list={self.effect_list}\n"
             f"  first_half={self.songs[0]}\n"
             f"  second_half={self.songs[1]}\n"
-        )
+        )   
+
+class Player:
+    """
+    게임에 참여하는 플레이어의 상태를 저장하는 클래스입니다.
+    """
+    def __init__(self, name: str, initial_coin: int):
+        self.name: str = name
+        self.songs = [None, None]
+        self.coin: int = initial_coin
+        self.score: int = 0
+        self.round_score: int = 0
+        self.round_multiplier: int = 0
+        self.effect_list: list[str] = []
+        self.betting: int = 0
+        

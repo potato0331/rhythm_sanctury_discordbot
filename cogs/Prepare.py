@@ -34,7 +34,7 @@ class Prepare(commands.Cog):
     @commands.command(name='진행자등록')
     async def _register_master(self, ctx: commands.Context):
      
-        if self.bot.master_player == None and not self.bot.game_started:
+        if self.bot.master_player.name == "null" and not self.bot.game_started:
             
             self.bot.master_player = User(ctx.author.global_name)
             await ctx.send(f"{ctx.author.global_name}님을 진행자로 등록했습니다.")
