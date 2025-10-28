@@ -48,7 +48,7 @@ if __name__ == '__main__':
         print("잘못된 토큰입니다. Discord Developer Portal에서 토큰을 확인하세요.")
     except Exception as e:
         print(f"봇 실행 중 오류 발생: {e}")
-
+#ㅗ
 
 
 
