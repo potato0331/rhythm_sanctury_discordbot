@@ -51,3 +51,15 @@ class Player:
         self.effect_list: list[str] = []
         self.betting: int = 0
         
+    def __repr__(self) -> str:
+        """
+        print() 함수 등으로 객체를 출력할 때 표시될 형식을 지정합니다.
+        """
+        return (
+            f"{self.name}\n"
+            f"  coin={self.coin}, betting={self.betting}, score={self.score}\n"
+            f"  round_score={self.round_score}, round_multiplier={self.round_multiplier}\n"
+            f"  effect_list={self.effect_list}\n"
+            f"  first_half={self.first_half}\n"
+            f"  second_half={self.second_half}\n"
+        )

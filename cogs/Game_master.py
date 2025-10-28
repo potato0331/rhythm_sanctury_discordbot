@@ -122,7 +122,7 @@ class GameMaster(commands.Cog):
         self.bot.is_card_draw_possible = False
         
         #전반전이 끝났는지 확인
-        if len(self.bot.player_deck) == 0 and self.bot.current_half == 0:
+        if (self.bot.current_round == len(self.bot.playerlist) + config.MASTER_ROUND_ON_FIRST_ROUND + 1):
             self.bot.current_half = 1
             await ctx.send(f"전반전이 종료되었습니다. 이제부터는 각 라운드마다 {config.ROUND_COIN[1]}코인이 지급됩니다.")
 
@@ -219,11 +219,15 @@ class GameMaster(commands.Cog):
             else:
                 await ctx.send(f"**{temp_rank}위**: {status.name} - {temp_score}점")
             await asyncio.sleep(2)
-            
+
         highest_score = sorted_players[0].score
-        final_winners = [sorted_players.pop()]
-        while(sorted_players[0].score == highest_score):
-            final_winners.append(sorted_players.pop())
+
+        sorted_players.reverse()
+
+        final_winners = [sorted_players.pop().name]
+
+        while (len(sorted_players) > 0 and sorted_players[len(sorted_players)-1].score == highest_score):
+            final_winners.append(sorted_players.pop().name)
         
         await ctx.send("--------------------")
         await asyncio.sleep(1)
@@ -257,7 +261,10 @@ class GameMaster(commands.Cog):
         
         if (config.MASTER_ROUND_ON_LAST_ROUND == 1):
             result.append(self.bot.master_player)
-        return result.reverse()
+        
+        result.reverse()
+
+        return result
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(GameMaster(bot))
