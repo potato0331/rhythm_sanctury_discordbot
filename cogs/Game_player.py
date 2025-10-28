@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from models import Player, RoundSong
+import config
+from models import RoundSong
 from discord import app_commands
 
 
@@ -11,10 +12,10 @@ class GamePlayer(commands.Cog):
     @app_commands.command(name="선곡등록", description="게임에 등장시킬 선곡과 라운드 패널티를 지정합니다.")
     @app_commands.describe(전반후반="전반/후반", 곡명="곡의 제목", 곡레벨="선곡한 곡의 레벨(전반: MX8~15+SC1~11, 후반: SC8~15)", 패널티="그 라운드의 패널티")
     @app_commands.choices(전반후반=[
-        app_commands.Choice(name="전반", value="전반"),
-        app_commands.Choice(name="후반", value="후반"),
+        app_commands.Choice(name="전반", value=0),
+        app_commands.Choice(name="후반", value=1),
     ])
-    async def _register_song(self, interaction: discord.Interaction, 전반후반: str="전반", 곡명: str="A", 곡레벨: str="SC1", 패널티: str="없음"):
+    async def _register_song(self, interaction: discord.Interaction, 전반후반: int, 곡명: str, 곡레벨: str, 패널티: str):
         if not self.bot.game_started:
             await interaction.response.send_message(f"아직 게임이 시작하지 않았습니다.")
             return
@@ -22,20 +23,13 @@ class GamePlayer(commands.Cog):
             await interaction.response.send_message(f"이미 라운드가 진행중입니다.")
             return
 
-        my_status = 0
-        for status in self.bot.player_status:
-            if status.name == interaction.user.global_name:
-                my_status = status
-                break
+        my_status = self.__find_Player(interaction.user.global_name)
 
-        if my_status == 0:
+        if my_status == None:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
             return
         
-        if 전반후반 == "전반":
-            my_status.first_half = RoundSong(song_name = 곡명, song_level = 곡레벨, round_penalty = 패널티)
-        else:
-            my_status.second_half = RoundSong(song_name = 곡명, song_level = 곡레벨, round_penalty = 패널티)
+        my_status.songs[전반후반] = RoundSong(곡명, 곡레벨, 패널티)
 
         await interaction.response.send_message(f"{my_status.name}님의 {전반후반}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
 
@@ -68,18 +62,13 @@ class GamePlayer(commands.Cog):
         if self.bot.current_round == 0:
             await interaction.response.send_message("아직 라운드가 시작하지 않았습니다.")
             return
-        if not self.bot.current_phase == "card":
+        if not self.bot.current_phase == config.Phase.CARD:
             await interaction.response.send_message("지금은 점수를 등록할 수 없습니다.")
             return
 
-        my_status = 0
+        my_status = self.__find_Player(interaction.user.global_name)
 
-        for status in self.bot.player_status:
-            if status.name == interaction.user.global_name:
-                my_status = status
-                break
-
-        if my_status == 0:
+        if my_status == None:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
         else:
             my_status.round_score = 점수
@@ -92,18 +81,13 @@ class GamePlayer(commands.Cog):
         if self.bot.current_round == 0:
             await interaction.response.send_message("아직 라운드가 시작하지 않았습니다.")
             return
-        if not self.bot.current_phase == "betting":
+        if not self.bot.current_phase == config.Phase.BETTING:
             await interaction.response.send_message("지금은 베팅할 수 없습니다.")
             return
 
-        my_status = 0
+        my_status = self.__find_Player(interaction.user.global_name)
 
-        for status in self.bot.player_status:
-            if status.name == interaction.user.global_name:
-                my_status = status
-                break
-
-        if my_status == 0:
+        if my_status == None:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
             return
         
@@ -154,8 +138,14 @@ class GamePlayer(commands.Cog):
                 embed.add_field(name=f"👤 {status.name}", value=effects_str, inline=True) 
 
         await interaction.response.send_message(embed=embed)
-
-
+    
+    def __find_Player(self, name):
+        result = None
+        for status in self.bot.player_status:
+            if status.name == name:
+                result = status
+                break
+        return result
 
 #여기서부터 건들지 말 것
     @commands.Cog.listener()

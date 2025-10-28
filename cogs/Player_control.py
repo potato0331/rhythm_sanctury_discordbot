@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from models import Player, RoundSong
+from models import RoundSong
 from discord import app_commands
 
 # 모든 진행자용 명령어를 담을 그룹 클래스를 정의
@@ -14,10 +14,10 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
     @app_commands.command(name="라운드등록", description="(진행자용 기능)진행자 라운드의 선곡/패널티를 입력합니다.")
     @app_commands.describe(전반후반="전반/후반", 곡명="곡의 제목", 곡레벨="선곡한 곡의 레벨(전반: MX8~15+SC1~11, 후반: SC8~15)", 패널티="그 라운드의 패널티")
     @app_commands.choices(전반후반=[
-        app_commands.Choice(name="전반", value="전반"),
-        app_commands.Choice(name="후반", value="후반"),
+        app_commands.Choice(name="전반", value=0),
+        app_commands.Choice(name="후반", value=1),
     ])
-    async def _master_register_song(self, interaction: discord.Interaction, 전반후반: str="전반", 곡명: str="A", 곡레벨: str="SC1", 패널티: str="없음"):
+    async def _master_register_song(self, interaction: discord.Interaction, 전반후반: str, 곡명: str, 곡레벨: str, 패널티: str):
         if not interaction.client.game_started:
             await interaction.response.send_message("아직 게임이 시작하지 않았습니다.")
             return
@@ -25,70 +25,52 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
             await interaction.response.send_message(f"이미 라운드가 진행중입니다.")
             return
         
-        if 전반후반 == "전반":
-            interaction.client.master_first_half = RoundSong(song_name = 곡명, song_level = 곡레벨, round_penalty = 패널티)
-        else:
-            interaction.client.master_second_half = RoundSong(song_name = 곡명, song_level = 곡레벨, round_penalty = 패널티)
-
+        interaction.client.master_player.songs[전반후반] = RoundSong(곡명, 곡레벨, 패널티)
         await interaction.response.send_message(f"진행자 라운드의 {전반후반}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
-
 
     @app_commands.command(name="점수수정", description="(진행자용) 플레이어의 총 점수를 수정합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 점수="수정할 총 점수")
     async def score_manage(self, interaction: discord.Interaction, 이름: discord.Member, 점수: int):
-        target_status = None
-        for status in interaction.client.player_status:
-            if status.name == 이름.global_name:
-                target_status = status
-                break
-        
-        if target_status is None:
+        target_status = self.__find_player(interaction.client.player_status, 이름.global_name)
+        if target_status == None:
             await interaction.response.send_message(f"{이름}님은 플레이어가 아닙니다", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"{target_status.name}님의 점수를 {target_status.score}에서 {점수}로 수정했습니다.", ephemeral=True)
-            target_status.score = 점수
+            return
+
+        await interaction.response.send_message(f"{target_status.name}님의 점수를 {target_status.score}에서 {점수}로 수정했습니다.", ephemeral=True)
+        target_status.score = 점수
 
     @app_commands.command(name="코인수정", description="(진행자용) 플레이어의 총 코인을 수정합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 코인="수정할 총 코인")
     async def coin_manage(self, interaction: discord.Interaction, 이름: discord.Member, 코인: int):
-        target_status = None
-        for status in interaction.client.player_status:
-            if status.name == 이름.global_name:
-                target_status = status
-                break
-        if target_status is None:
+        target_status = self.__find_player(interaction.client.player_status, 이름.global_name)
+        if target_status == None:
             await interaction.response.send_message(f"{이름}님은 플레이어가 아닙니다", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"{target_status.name}님의 코인을 {target_status.coin}에서 {코인}로 수정했습니다.", ephemeral=True)
-            target_status.coin = 코인
+            return
+
+        await interaction.response.send_message(f"{target_status.name}님의 코인을 {target_status.coin}에서 {코인}로 수정했습니다.", ephemeral=True)
+        target_status.coin = 코인
     
     @app_commands.command(name="현재점수수정", description="(진행자용) 플레이어의 이번 라운드 점수를 수정합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 점수="수정할 이번 라운드 점수")
     async def round_score_manage(self, interaction: discord.Interaction, 이름: discord.Member, 점수: int):
-        target_status = None
-        for status in interaction.client.player_status:
-            if status.name == 이름.global_name:
-                target_status = status
-                break
-        if target_status is None:
+        target_status = self.__find_player(interaction.client.player_status, 이름.global_name)
+        if target_status == None:
             await interaction.response.send_message(f"{이름}님은 플레이어가 아닙니다", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"{target_status.name}님의 이번 라운드 점수를 {target_status.round_score}에서 {점수}로 수정했습니다.", ephemeral=True)
-            target_status.round_score = 점수
+            return
+
+        await interaction.response.send_message(f"{target_status.name}님의 이번 라운드 점수를 {target_status.round_score}에서 {점수}로 수정했습니다.", ephemeral=True)
+        target_status.round_score = 점수
 
     @app_commands.command(name="배수수정", description="(진행자용) 플레이어의 이번 라운드 배수를 수정합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 배수="수정할 배수")
     async def round_multiplier_manage(self, interaction: discord.Interaction, 이름: discord.Member, 배수: int):
-        target_status = None
-        for status in interaction.client.player_status:
-            if status.name == 이름.global_name:
-                target_status = status
-                break
-        if target_status is None:
+        target_status = self.__find_player(interaction.client.player_status, 이름.global_name)
+        if target_status == None:
             await interaction.response.send_message(f"{이름}님은 플레이어가 아닙니다", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"{target_status.name}님의 배팅 가산값을 {target_status.round_multiplier}에서 {배수}로 수정했습니다.", ephemeral=True)
-            target_status.round_multiplier = 배수
+            return
+
+        await interaction.response.send_message(f"{target_status.name}님의 배팅 가산값을 {target_status.round_multiplier}에서 {배수}로 수정했습니다.", ephemeral=True)
+        target_status.round_multiplier = 배수
 
     @app_commands.command(name="효과수정", description="(진행자용 기능)원하는 플레이어의 이번 라운드의 적용된 효과를 추가합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 추가제거 = "[추가]또는 [제거]입력", 효과="추가하거나 제거할 효과를 정확히")
@@ -97,23 +79,28 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
         app_commands.Choice(name="제거", value="제거"),
     ])
     async def _master_effect_manage(self, interaction: discord.Interaction, 이름: discord.Member, 추가제거: str="추가", 효과: str="효과"):
-        target_status = 0
-        for status in interaction.client.player_status:
-            if status.name == 이름.global_name:
-                target_status = status
-                break
-        if target_status == 0:
+        target_status = self.__find_player(interaction.client.player_status, 이름.global_name)
+        if target_status == None:
             await interaction.response.send_message(f"{이름}님은 플레이어가 아닙니다",ephemeral = True)
-        else:
-            if 추가제거 == "제거":
-                if 효과 in target_status.effect_list:
-                    target_status.effect_list.remove(효과)
-                    await interaction.response.send_message(f"{target_status.name}님에게 {효과}를 제거했습니다.",ephemeral = True)
-                else:
-                    await interaction.response.send_message(f"{target_status.name}님에게는 {효과}가 없습니다.",ephemeral = True)
-            else: 
-                target_status.effect_list.append(효과)
-                await interaction.response.send_message(f"{target_status.name}님에게 {효과}를 추가했습니다.",ephemeral = True)
+            return
+        
+        if 추가제거 == "제거":
+            if 효과 in target_status.effect_list:
+                target_status.effect_list.remove(효과)
+                await interaction.response.send_message(f"{target_status.name}님에게 {효과}를 제거했습니다.",ephemeral = True)
+            else:
+                await interaction.response.send_message(f"{target_status.name}님에게는 {효과}가 없습니다.",ephemeral = True)
+        else: 
+            target_status.effect_list.append(효과)
+            await interaction.response.send_message(f"{target_status.name}님에게 {효과}를 추가했습니다.",ephemeral = True)
+    
+    def __find_player(self, player_status, name):
+        result = None
+        for status in player_status:
+            if status.name == name:
+                result = status
+                break
+        return result
 
 
 class PlayerControl(commands.Cog):
