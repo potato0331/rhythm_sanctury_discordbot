@@ -1,5 +1,5 @@
 from discord.ext import commands
-
+from discord import app_commands
 from models import User
 
 class Prepare(commands.Cog):
@@ -11,7 +11,7 @@ class Prepare(commands.Cog):
         self.bot.master_player = User("null")
         self.bot.game_started = False
 
-    @commands.command(name='초기화')    
+    @commands.command(name='초기화')
     async def _reset_game(self, ctx: commands.Context):
         self.bot.playerlist = []
         self.bot.player_status = []
@@ -20,7 +20,7 @@ class Prepare(commands.Cog):
 
         await ctx.send(f"리셋이 완료 돼었습니다.")
 
-    @commands.command(name='플레이어등록')
+    @app_commands.command(name='플레이어등록', description="플레이어로 참가합니다.")
     async def _register_player(self, ctx: commands.Context):
         
         if self.bot.playerlist.count(ctx.author.global_name) == 0 and not self.bot.game_started:
