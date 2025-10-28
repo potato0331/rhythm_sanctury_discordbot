@@ -133,7 +133,7 @@ class GameMaster(commands.Cog):
         await ctx.send(f"{self.bot.current_round} 라운드가 시작됩니다.")
 
         # 다음 라운드 플레이어 지정
-        self.bot.roundplayer = self.bot.player_deck[self.bot.current_round - 1] ###########################################
+        self.bot.roundplayer = self.bot.player_deck.pop()
         await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.songs[self.bot.current_half],False)
 
         self.bot.current_phase = config.Phase.BETTING
@@ -257,8 +257,7 @@ class GameMaster(commands.Cog):
         
         if (config.MASTER_ROUND_ON_LAST_ROUND == 1):
             result.append(self.bot.master_player)
-        
-        return result
+        return result.reverse()
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(GameMaster(bot))
