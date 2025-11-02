@@ -32,7 +32,7 @@ class CardDraw(commands.Cog):
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
             return
         if(self.bot.current_phase != config.Phase.CARD):
-            await interaction.response.send_message("지금은 카드를 뽑을 수 없습니다.")
+            await interaction.response.send_message("지금은 카드를 뽑을 수 없습니다.",ephemeral=True)
             return
         if(player.coin < self.bot.current_card_price):
             await interaction.response.send_message("코인이 부족합니다.",ephemeral = True)
@@ -81,6 +81,10 @@ class CardDraw(commands.Cog):
                 await interaction.followup.send(f"{player.name}님이 6코인을 획득했습니다.")
 
             case "(대상랜덤)배율2":
+                if len(self.bot.player_status) < 2:
+                        await interaction.followup.send("효과 발동 실패: 소매넣기할 다른 플레이어가 없습니다.")
+                        return
+
                 while True:
                     random_player = self.bot.player_status[random.randint(0,len(self.bot.player_status)-1)]
                     if random_player.name != player.name:
