@@ -60,6 +60,6 @@ class Player:
             f"  coin={self.coin}, betting={self.betting}, score={self.score}\n"
             f"  round_score={self.round_score}, round_multiplier={self.round_multiplier}\n"
             f"  effect_list={self.effect_list}\n"
-            f"  first_half={self.first_half}\n"
-            f"  second_half={self.second_half}\n"
+            f"  first_half={self.songs[0]}\n"
+            f"  second_half={self.songs[1]}\n"
         )

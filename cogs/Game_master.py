@@ -15,6 +15,7 @@ class GameMaster(commands.Cog):
         self.bot.current_half = 0
         self.bot.player_deck = [] # 라운드 진행 순서 덱
         self.bot.roundplayer = 0 
+        self.bot.current_card_price = config.CARD_PRICE
         self.bot.current_phase = config.Phase.PERPARE #prepare ->(곡등록완료)-> /반복/ betting ->(배팅완료)-> penalty ->(저격공개)-> card ->(다음라운드)-> /반복/
         #current_phase의 수정은 이 파일에서만 이루어지게 함. 
 
@@ -33,6 +34,7 @@ class GameMaster(commands.Cog):
         self.bot.current_round = 0
         self.bot.current_half = 0
         self.bot.player_deck = []
+        self.bot.current_card_price = config.CARD_PRICE
 
         # player_status 초기화
         self.bot.player_status = [] 
@@ -75,6 +77,7 @@ class GameMaster(commands.Cog):
             status.round_score = -1
             status.effect_list = []
             status.coin += config.ROUND_COIN[0]# 1라운드 코인 지급
+        self.bot.current_card_price = config.CARD_PRICE
 
         self.bot.current_round = 1
         await ctx.send("1라운드를 시작하겠습니다. 건투를 빕니다.")
@@ -119,7 +122,7 @@ class GameMaster(commands.Cog):
             return await ctx.send("모든 라운드가 종료되었습니다. `!결과발표`로 최종 결과를 확인해주세요.")
 
         self.bot.current_round += 1
-        self.bot.is_card_draw_possible = False
+        self.bot.current_card_price = config.CARD_PRICE
         
         #전반전이 끝났는지 확인
         if (self.bot.current_round == len(self.bot.playerlist) + config.MASTER_ROUND_ON_FIRST_ROUND + 1):
@@ -160,12 +163,6 @@ class GameMaster(commands.Cog):
         #패널티 공개(곡 공개함수 재활용)
         await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.songs[self.bot.current_half],True)
         
-        embed = discord.Embed(
-            title=f"{self.bot.current_round} 라운드",
-            description=f"이번 라운드의 플레이어는 **{self.bot.roundplayer.name}** 님입니다.",
-            color=discord.Color.green()
-        )
-
         #배팅액 공개
         sorted_players = sorted(self.bot.player_status, key=lambda p: p.betting)
         self.anonymous_player_list = []
@@ -236,8 +233,6 @@ class GameMaster(commands.Cog):
         
     async def song_reveal(self, ctx: commands.Context, player: str, song: RoundSong, open_penalty: bool):
         """곡의 정보 (+패널티)를 임베드로 출력"""
-        print(player, song, open_penalty)
-
         embed = discord.Embed(
             title=f"{self.bot.current_round} 라운드",
             description=f"이번 라운드의 플레이어는 **{player}** 님입니다.",

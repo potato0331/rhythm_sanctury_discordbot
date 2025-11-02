@@ -65,7 +65,7 @@ CARDS = [
         name='소매넣기',
         type=1,
         description='(자신을 제외한)랜덤으로 1명을 뽑아 가산값 2를 적용합니다',
-        effect_tag='배율5+(대상랜덤)배율2',
+        effect_tag='(대상랜덤)배율2',
         image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907926351679539/some.png',
         betting_value=5,
         card_count=4
@@ -74,11 +74,11 @@ CARDS = [
         id=8,
         name='연쇄할인마',
         type=1,
-        description='다음 찬스카드 구매가격이 2코인 감소합니다.',
-        effect_tag='뽑기할인2',
+        description='이번 라운드의 카드뽑기의 비용이 1코인 감소합니다.',
+        effect_tag='뽑기할인1',
         image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907969003683860/steam.png',
         betting_value=3,
-        card_count=4
+        card_count=3
     ),
     Card(
         id=9,
@@ -494,10 +494,10 @@ CARDS = [
         id=50,
         name='인플레이션',
         type=3,
-        description='다음 찬스카드 구매가격이 1코인 상승합니다.',
+        description='이번 라운드의 카드뽑기의 비용이 1코인 상승합니다.',
         effect_tag='뽑기할증1',
         image_file='https://cdn.discordapp.com/attachments/1431906792400617492/1431907422921953360/implation.png',
         betting_value=4, 
-        card_count=4
+        card_count=2
     ),
 ]

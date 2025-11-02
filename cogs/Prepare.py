@@ -20,7 +20,7 @@ class Prepare(commands.Cog):
 
         await ctx.send(f"리셋이 완료 돼었습니다.")
 
-    @app_commands.command(name='플레이어등록', description="플레이어로 참가합니다.")
+    @commands.command(name='플레이어등록')
     async def _register_player(self, ctx: commands.Context):
         
         if self.bot.playerlist.count(ctx.author.global_name) == 0 and not self.bot.game_started:

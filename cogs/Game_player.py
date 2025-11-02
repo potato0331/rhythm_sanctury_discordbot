@@ -52,8 +52,7 @@ class GamePlayer(commands.Cog):
                                                     f"현재 배율: {my_status.round_multiplier}\n"
                                                     f"현재 점수: {my_status.score}\n"
                                                     f"이번 라운드 효과: {my_status.effect_list}\n"
-                                                    "------------------------------\n"
-                                                    ,ephemeral = True)
+                                                    "------------------------------\n",ephemeral = True)
 
 
     @app_commands.command(name="점수입력", description="이번 라운드의 게임 플레이 결과를 입력합니다.")
