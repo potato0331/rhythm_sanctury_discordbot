@@ -10,14 +10,14 @@ import random
 class CardDraw(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.card_deck: list[Card] = []
+        self.bot.card_deck: list[Card] = []
         self.__deck_reset()
 
     def __deck_reset(self):
         for card in card_list.CARDS: #덱 리셋
             for i in range(card.card_count):
-                self.card_deck.append(card)
-        random.shuffle(self.card_deck)
+                self.bot.card_deck.append(card)
+        random.shuffle(self.bot.card_deck)
         
 
     @app_commands.command(name="카드뽑기", description=f"{config.CARD_PRICE}코인을 지불하고 무작위의 찬스카드 1장을 뽑습니다.")
@@ -43,9 +43,9 @@ class CardDraw(commands.Cog):
         player.coin -= self.bot.current_card_price
 
         #카드 뽑기
-        if(len(self.card_deck) == 0):
+        if(len(self.bot.card_deck) == 0):
             self.__deck_reset()
-        card = self.card_deck.pop()
+        card = self.bot.card_deck.pop()
 
         #카드 공표용 엠베드 제작
         embed = discord.Embed()

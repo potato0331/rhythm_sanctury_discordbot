@@ -103,7 +103,7 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
                 break
         return result
 
-    @app_commands.command(name="카드뽑기", description="(진행자용) 특정 카드를 강제로 제일 앞에 배치합니다.")
+    @app_commands.command(name="카드수정", description="(진행자용) 특정 카드를 강제로 제일 앞에 배치합니다.")
     @app_commands.describe(id="카드의 id(card_list 파일)")
     async def card_deck_manage(self, interaction: discord.Interaction, id: int):
         selected_card = None
@@ -116,7 +116,7 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
             await interaction.response.send_message(f"{id}번 카드는 존재하지 않습니다.",ephemeral = True)
             return
         
-        self.bot.card_deck.insert(0,selected_card)
+        interaction.client.card_deck.append(selected_card)
         await interaction.response.send_message(f"{selected_card.name}카드를 덱의 제일 위에 추가했습니다.", ephemeral=True)
 
 
