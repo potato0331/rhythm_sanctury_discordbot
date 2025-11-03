@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord.ext import commands
 from models import Card
@@ -104,7 +105,20 @@ class CardDraw(commands.Cog):
             case "뽑기할증1":
                 self.bot.current_card_price += 1
                 await interaction.followup.send(f"이번 라운드의 랜덤카드 가격이 1코인 증가하여 {self.bot.current_card_price}가 돼었습니다.")   
+            
+            case "연설":
+                await interaction.followup.send(f"{player.name}님이 연설을 시작합니다!")
+                await asyncio.sleep(90)
+                await interaction.followup.send(f"{player.name}님의 연설시간이 30초 남았습니다!")
+                await asyncio.sleep(30)
+                await interaction.followup.send(f"{player.name}님의 연설시간이 종료돼었습니다!")
 
+            case "국민연금":
+                await interaction.followup.send(f"{player.name}님의 배팅 가산값 {player.round_multiplier}만큼이 국민연금에 적립돼었습니다!")
+                player.saved_pension += player.round_multiplier
+                player.round_multiplier = 0
+
+                             
             case _:
                 player.effect_list.append(card.effect_tag)
 

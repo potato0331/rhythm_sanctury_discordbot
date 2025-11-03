@@ -77,6 +77,9 @@ class GameMaster(commands.Cog):
             status.round_score = -1
             status.effect_list = []
             status.coin += config.ROUND_COIN[0]# 1라운드 코인 지급
+            status.saved_pension = 0
+                
+
         self.bot.current_card_price = config.CARD_PRICE
 
         self.bot.current_round = 1
@@ -115,6 +118,11 @@ class GameMaster(commands.Cog):
             status.betting = 0
             status.round_score = -1
             status.effect_list = []
+            if status.saved_pension != 0: #국민연금 처리
+                random_multiplier = random.randint(1,6) - 3
+                await ctx.send(f"{status.name}님의 국민연금에 적립돼어 있던 배팅 가산값 {status.saved_pension}이 이자를 붙여서{status.saved_pension + random_multiplier}로 돌아왔습니다!")
+                status.round_multiplier += status.saved_pension + random_multiplier
+                status.saved_pension = 0
         await ctx.send("--------------------------------")
 
         # 마지막 라운드인지 확인

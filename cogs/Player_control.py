@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from models import RoundSong
 from discord import app_commands
+import card_list
 
 # 모든 진행자용 명령어를 담을 그룹 클래스를 정의
 # parent를 지정하여 /진행자 OOO 형태의 하위 명령어로
@@ -72,7 +73,7 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
         await interaction.response.send_message(f"{target_status.name}님의 배팅 가산값을 {target_status.round_multiplier}에서 {배수}로 수정했습니다.", ephemeral=True)
         target_status.round_multiplier = 배수
 
-    @app_commands.command(name="효과수정", description="(진행자용 기능)원하는 플레이어의 이번 라운드의 적용된 효과를 추가합니다.")
+    @app_commands.command(name="효과수정", description="(진행자용)원하는 플레이어의 이번 라운드의 적용된 효과를 추가합니다.")
     @app_commands.describe(이름="수정하고 싶은 사람의 닉네임", 추가제거 = "[추가]또는 [제거]입력", 효과="추가하거나 제거할 효과를 정확히")
     @app_commands.choices(추가제거=[
         app_commands.Choice(name="추가", value="추가"),
@@ -101,6 +102,22 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
                 result = status
                 break
         return result
+
+    @app_commands.command(name="카드뽑기", description="(진행자용) 특정 카드를 강제로 제일 앞에 배치합니다.")
+    @app_commands.describe(id="카드의 id(card_list 파일)")
+    async def card_deck_manage(self, interaction: discord.Interaction, id: int):
+        selected_card = None
+        for card in card_list.CARDS:
+            if card.id == id:
+                selected_card = card
+                break
+        
+        if selected_card == None:
+            await interaction.response.send_message(f"{id}번 카드는 존재하지 않습니다.",ephemeral = True)
+            return
+        
+        self.bot.card_deck.insert(0,selected_card)
+        await interaction.response.send_message(f"{selected_card.name}카드를 덱의 제일 위에 추가했습니다.", ephemeral=True)
 
 
 class PlayerControl(commands.Cog):

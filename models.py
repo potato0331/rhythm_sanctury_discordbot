@@ -50,6 +50,7 @@ class Player:
         self.round_multiplier: int = 0
         self.effect_list: list[str] = []
         self.betting: int = 0
+        self.saved_pension: int = 0 #국민연금 저장량
         
     def __repr__(self) -> str:
         """
