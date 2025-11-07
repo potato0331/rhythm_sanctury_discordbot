@@ -61,15 +61,16 @@ class CardDraw(commands.Cog):
 
         draw_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="다시뽑기")
         accept_button = discord.ui.Button(style=discord.ButtonStyle.success, label="확정하기")
-        draw_button.callback = draw_button_callback()
-        accept_button. callback = accept_button_callback()
 
         view = discord.ui.View()
         view.add_item(draw_button)
         view.add_item(accept_button)
+        draw_button.callback = draw_button_callback
+        accept_button.callback = accept_button_callback
 
         embed = await self.card_reveal(interaction, card)
         await interaction.followup.send(content = "카드를 뽑습니다!", embed = embed, view=view)
+
 
 
     async def card_effect(self, interaction: discord.Interaction, card: Card, player: Player):
@@ -121,7 +122,7 @@ class CardDraw(commands.Cog):
                 player.round_multiplier = 0
 
             case "공산당":
-                await self.communist(interaction, card, player)
+                await self.communist(interaction, player)
       
             case _: #그 외 전부
                 player.effect_list.append(card.effect_tag)
