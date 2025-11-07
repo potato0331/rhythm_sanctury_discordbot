@@ -44,32 +44,67 @@ class CardDraw(commands.Cog):
         return embed
 
     async def communist(self, interaction: discord.Interaction, player: Player):
+        
+        # 1. communist 함수 범위에서 카드 뽑기
+        # (3번 문제는 의도된 사항이라고 하셨으니, 이 로직을 유지합니다)
+        card = card_list.CARDS[random.randint(1,50) - 1]
 
-        async def draw_button_callback():      
-            await self.communist(interaction, player)
+        # 2. 버튼 콜백 함수에 'button_interaction' 인자 추가
+        async def draw_button_callback(button_interaction: discord.Interaction):
+            # 버튼을 누른 사람 확인
+            if button_interaction.user.global_name != self.bot.master_player.name:
+                await button_interaction.response.send_message("당신은 이 버튼을 누를 수 없습니다.", ephemeral=True)
+                return
+
+            # 버튼 클릭에 응답 (필수)
+            await button_interaction.response.defer() 
+            # 원래 메시지(버튼이 달린 메시지)를 삭제
             await interaction.message.delete()
+            # 다시 뽑기 실행
+            await self.communist(interaction, player)
 
-        async def accept_button_callback():      
+
+        async def accept_button_callback(button_interaction: discord.Interaction):
+            # 버튼을 누른 사람 확인
+            if button_interaction.user.global_name != self.bot.master_player.name:
+                await button_interaction.response.send_message("당신은 이 버튼을 누를 수 없습니다.", ephemeral=True)
+                return
+
+            # 버튼 클릭에 응답 (필수)
+            await button_interaction.response.defer()
+            
+            # 확정된 카드의 효과 적용
             player.round_multiplier += card.betting_value
-            await self.card_effect(interaction, card, player)
+            # (card 변수는 이 함수 바깥(communist)의 card를 올바르게 참조합니다)
+            await self.card_effect(interaction, card, player) 
+            
             embed = await self.card_reveal(interaction, card)
             await interaction.followup.send(content = "확정된 카드는...", embed = embed)
+            # 원래 메시지(버튼이 달린 메시지)를 삭제
             await interaction.message.delete()
 
         
-        card = card_list.CARDS[random.randint(1,50) - 1]
-
         draw_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="다시뽑기")
         accept_button = discord.ui.Button(style=discord.ButtonStyle.success, label="확정하기")
 
+        # 3. View에 버튼 추가
         view = discord.ui.View()
         view.add_item(draw_button)
         view.add_item(accept_button)
+
+        # 4. 콜백 함수 할당
         draw_button.callback = draw_button_callback
         accept_button.callback = accept_button_callback
 
         embed = await self.card_reveal(interaction, card)
-        await interaction.followup.send(content = "카드를 뽑습니다!", embed = embed, view=view)
+        
+        # 5. followup.send로 버튼 메시지 전송 및 저장
+        # (followup으로 보내야 원래 interaction이 살아있어 메시지 삭제 등이 가능)
+        communist_message = await interaction.followup.send(content = "카드를 뽑습니다!", embed = embed, view=view)
+        
+        # 6. interaction.message를 communist_message로 덮어쓰기
+        # (콜백이 interaction.message.delete()를 올바르게 참조하도록)
+        interaction.message = communist_message
 
 
 
