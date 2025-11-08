@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from models import Player, RoundSong
+from models import Player, RoundSong, User
 import random
 import asyncio 
 import config 
@@ -8,29 +8,17 @@ import config
 class GameMaster(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-        self.bot.player_status = []
-        self.bot.current_round = 0
-        self.bot.total_round = 0
-        self.bot.current_half = 0
-        self.bot.player_deck = [] # 라운드 진행 순서 덱
-        self.bot.roundplayer = 0 
-        self.bot.current_card_price = config.CARD_PRICE
-        self.bot.current_phase = config.Phase.PERPARE #prepare ->(곡등록완료)-> /반복/ betting ->(배팅완료)-> penalty ->(저격공개)-> card ->(다음라운드)-> /반복/
-        #current_phase의 수정은 이 파일에서만 이루어지게 함. 
-
-
         self.anonymous_player_list = [] #라운드 패널티 저격할 때, 정렬된 플레이어를 잠깐 저장하는 변수.
 
     @commands.command(name='게임시작')
     async def _start_game(self, ctx: commands.Context):
         if ctx.author.global_name != self.bot.master_player.name:
             return await ctx.send(f"{ctx.author.global_name}님은 진행자가 아닙니다.")
-        if self.bot.game_started:
+        if self.bot.current_phase != config.Phase.READY:
             return await ctx.send("게임이 이미 시작했습니다.")
         
         # 게임 초기화
-        self.bot.game_started = True
+        self.bot.current_phase = config.Phase.PREPARE
         self.bot.current_round = 0
         self.bot.current_half = 0
         self.bot.player_deck = []
@@ -96,10 +84,8 @@ class GameMaster(commands.Cog):
 
     @commands.command(name='다음라운드')    
     async def _next_round(self, ctx: commands.Context):
-        if not self.bot.game_started:
-            return await ctx.send("게임이 시작되지 않았습니다.")
-        if self.bot.current_round == 0:
-            return await ctx.send("아직 1라운드도 시작하지 않았습니다. `!곡등록완료`를 먼저 입력해주세요.")
+        if self.bot.current_phase != config.Phase.PREPARE:
+            return await ctx.send("게임이 시작되지 않았거나, 이미 라운드가 시작했습니다.")
 
         # 점수 입력 확인
         for status in self.bot.player_status:
@@ -127,8 +113,10 @@ class GameMaster(commands.Cog):
 
         # 마지막 라운드인지 확인
         if self.bot.current_round == self.bot.total_round:
-            return await ctx.send("모든 라운드가 종료되었습니다. `!결과발표`로 최종 결과를 확인해주세요.")
-
+            await ctx.send("모든 라운드가 종료되었습니다. `!결과발표`로 최종 결과를 확인해주세요.")
+            self.bot.current_phase = config.Phase.RESULT
+            return 
+        
         self.bot.current_round += 1
         self.bot.current_card_price = config.CARD_PRICE
         
@@ -153,10 +141,8 @@ class GameMaster(commands.Cog):
 
     @commands.command(name='배팅완료')    
     async def _end_betting(self, ctx: commands.Context):
-        if not self.bot.game_started:
-            return await ctx.send("게임이 시작되지 않았습니다.")
-        if self.bot.current_round == 0:
-            return await ctx.send("아직 1라운드도 시작하지 않았습니다. `!곡등록완료`를 먼저 입력해주세요.")
+        if self.bot.current_phase != config.Phase.BETTING:
+            return await ctx.send("게임이 시작되지 않았거나,베팅 페이즈가 아닙니다. ")
 
         # 점수 입력 확인
         for status in self.bot.player_status:
@@ -197,7 +183,7 @@ class GameMaster(commands.Cog):
     @commands.command(name='플레이어확인')    
     async def _check_player(self, ctx: commands.Context):
         await ctx.send(f"등록된 플레이어: {self.bot.playerlist}")
-        if self.bot.game_started and self.bot.player_status:
+        if self.bot.current_phase != config.Phase.PREPARE and self.bot.player_status:
             await ctx.send(f"현재 플레이어 상태: {self.bot.player_status}")
         else:
             await ctx.send("게임이 시작되지 않았거나 플레이어 상태 정보가 없습니다.")
@@ -205,7 +191,7 @@ class GameMaster(commands.Cog):
 
     @commands.command(name='결과발표')    
     async def _show_result(self, ctx: commands.Context):
-        if self.bot.current_round < self.bot.total_round:
+        if self.bot.current_phase != config.Phase.RESULT:
             return await ctx.send(f"아직 마지막 라운드가 아닙니다. (현재 {self.bot.current_round}/{self.bot.total_round})")
         
         await ctx.send("--- 🏆 최종결과 🏆 ---")

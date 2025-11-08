@@ -16,11 +16,8 @@ class GamePlayer(commands.Cog):
         app_commands.Choice(name="후반", value=1),
     ])
     async def _register_song(self, interaction: discord.Interaction, 전반후반: int, 곡명: str, 곡레벨: str, 패널티: str):
-        if not self.bot.game_started:
-            await interaction.response.send_message(f"아직 게임이 시작하지 않았습니다.")
-            return
-        if self.bot.current_round != 0:
-            await interaction.response.send_message(f"이미 라운드가 진행중입니다.")
+        if self.bot.current_phase != config.Phase.READY:
+            await interaction.response.send_message(f"아직 게임이 시작하지 않았거나, 이미 시작했습니다.")
             return
 
         my_status = self.__find_Player(interaction.user.global_name)

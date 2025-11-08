@@ -10,7 +10,6 @@ import random
 class CardDraw(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bot.card_deck: list[Card] = []
         self.__deck_reset()
 
 
