@@ -58,7 +58,7 @@ class ResetGame(commands.Cog):
         self.bot.master_player = None
         print("=== 게임 상태 초기화 완료 ===")
         
-    def __save_game_state(self):
+    def save_game_state(self):
         try:
             card_cog = self.bot.get_cog("CardDraw")
             card_deck = card_cog.bot.card_deck if card_cog else []

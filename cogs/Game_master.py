@@ -111,6 +111,8 @@ class GameMaster(commands.Cog):
                 status.saved_pension = 0
         await ctx.send("--------------------------------")
 
+        self.bot.get_cog("ResetGame").save_game_state()
+
         # 마지막 라운드인지 확인
         if self.bot.current_round == self.bot.total_round:
             await ctx.send("모든 라운드가 종료되었습니다. `!결과발표`로 최종 결과를 확인해주세요.")
