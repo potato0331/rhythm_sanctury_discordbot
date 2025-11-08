@@ -84,13 +84,15 @@ class GameMaster(commands.Cog):
 
     @commands.command(name='다음라운드')    
     async def _next_round(self, ctx: commands.Context):
-        if self.bot.current_phase != config.Phase.PREPARE:
+        if self.bot.current_phase != config.Phase.CARD:
             return await ctx.send("게임이 시작되지 않았거나, 이미 라운드가 시작했습니다.")
 
         # 점수 입력 확인
         for status in self.bot.player_status:
             if status.round_score < 0:
                 return await ctx.send(f"{status.name}님이 현재 점수를 입력하지 않았습니다. (`/점수입력` 필요)")
+            
+        self.bot.get_cog("ResetGame").save_game_state() #라운드가 끝나기 직전 상태를 상정하고 저장
 
         # 점수 계산
         await ctx.send("--------------------------------")
@@ -110,8 +112,6 @@ class GameMaster(commands.Cog):
                 status.round_multiplier += status.saved_pension + random_multiplier
                 status.saved_pension = 0
         await ctx.send("--------------------------------")
-
-        self.bot.get_cog("ResetGame").save_game_state()
 
         # 마지막 라운드인지 확인
         if self.bot.current_round == self.bot.total_round:

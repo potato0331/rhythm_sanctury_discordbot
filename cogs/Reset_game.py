@@ -24,15 +24,11 @@ class ResetGame(commands.Cog):
                 self.bot.player_deck = game_state.get("player_deck", [])
                 self.bot.roundplayer = game_state.get("roundplayer", 0)
                 self.bot.current_card_price = game_state.get("current_card_price", config.CARD_PRICE)
-                self.bot.current_phase = game_state.get("current_phase", config.Phase.PERPARE)
-                self.bot.game_started = game_state.get("game_started", False) # ◀ Prepare.py 변수도 여기서
-                self.bot.playerlist = game_state.get("playerlist", [])       # ◀ Prepare.py 변수도 여기서
-                self.bot.master_player = game_state.get("master_player", None) # ◀ Prepare.py 변수도 여기서
-                
-                # Card_draw Cog의 덱도 복원
-                card_cog = self.bot.get_cog("CardDraw")
-                if card_cog:
-                    card_cog.bot.card_deck = game_state.get("card_deck", [])
+                self.bot.current_phase = game_state.get("current_phase", config.Phase.BETTING)
+                self.bot.game_started = game_state.get("game_started", False) 
+                self.bot.playerlist = game_state.get("playerlist", [])      
+                self.bot.master_player = game_state.get("master_player", None) 
+                self.bot.card_deck = game_state.get("card_deck", [])
 
                 print("=== 게임 상태 복원 완료 ===")
 
@@ -52,16 +48,15 @@ class ResetGame(commands.Cog):
         self.bot.player_deck = []
         self.bot.roundplayer = 0 
         self.bot.current_card_price = config.CARD_PRICE
-        self.bot.current_phase = config.Phase.PERPARE
+        self.bot.current_phase = config.Phase.READY
         self.bot.game_started = False
         self.bot.playerlist = []
         self.bot.master_player = None
+        self.bot.card_deck = []
         print("=== 게임 상태 초기화 완료 ===")
         
     def save_game_state(self):
         try:
-            card_cog = self.bot.get_cog("CardDraw")
-            card_deck = card_cog.bot.card_deck if card_cog else []
 
             game_state = {
                 "player_status": self.bot.player_status,
@@ -75,7 +70,7 @@ class ResetGame(commands.Cog):
                 "game_started": self.bot.game_started,
                 "playerlist": self.bot.playerlist,
                 "master_player": self.bot.master_player,
-                "card_deck": card_deck
+                "card_deck": self.bot.card_deck
             }
             
             with open(SAVE_FILE, "wb") as f:
@@ -95,9 +90,14 @@ class ResetGame(commands.Cog):
         self.bot.player_deck = [] # 라운드 진행 순서 덱
         self.bot.roundplayer = 0 
         self.bot.current_card_price = config.CARD_PRICE
+        self.bot.card_deck: list[Card] = []
         self.bot.playerlist = []
         self.bot.master_player = None
         self.bot.current_phase = config.Phase.READY
+
+        if os.path.exists(config.SAVE_FILE):
+            os.remove(config.SAVE_FILE)
+        await ctx.send("저장된 게임 상태 파일을 삭제했습니다.")
 
         await ctx.send(f"리셋이 완료 돼었습니다.")
 

@@ -19,13 +19,6 @@ class MasterCommandGroup(app_commands.Group, name="진행자", description="게�
         app_commands.Choice(name="후반", value=1),
     ])
     async def _master_register_song(self, interaction: discord.Interaction, 전반후반: int, 곡명: str, 곡레벨: str, 패널티: str):
-        if not interaction.client.game_started:
-            await interaction.response.send_message("아직 게임이 시작하지 않았습니다.")
-            return
-        if interaction.client.current_round != 0:
-            await interaction.response.send_message(f"이미 라운드가 진행중입니다.")
-            return
-        
         interaction.client.master_player.songs[전반후반] = RoundSong(곡명, 곡레벨, 패널티)
         await interaction.response.send_message(f"진행자 라운드의 {'후반' if 전반후반 else '전반'}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
 
