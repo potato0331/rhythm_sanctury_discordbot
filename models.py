@@ -1,3 +1,5 @@
+from discord import Member
+from discord.ext import commands
 class Card:
     def __init__(self, id: int, name: str, type: int, description: str, image_file: str, effect_name: str, betting_value: int, card_count: int, effect_tag: list ):
         self.id = id
@@ -23,8 +25,9 @@ class RoundSong:
         return f"{self.song_name}/{self.song_level}/{self.round_penalty}"
     
 class User:
-    def __init__(self, name: str):
-        self.name: str = name
+    def __init__(self, ctx: commands.Context):
+        self.member :Member = ctx.author
+        self.name: str = self.member.global_name
         self.songs = [None, None]
         self.effect_list: list[str] = []
 

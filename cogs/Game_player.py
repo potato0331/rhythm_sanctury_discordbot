@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import config
-from models import RoundSong
+from models import RoundSong, User
 from discord import app_commands
 
 
@@ -27,8 +27,47 @@ class GamePlayer(commands.Cog):
             return
        
         my_status.songs[전반후반] = RoundSong(곡명, 곡레벨, 패널티)
- 
-        await interaction.response.send_message(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡을 {곡명}/{곡레벨}/{패널티}로 설정했습니다.", ephemeral=True)
+                
+        async def draw_callback(button_interaction: discord.Interaction):
+            await interaction.channel.send(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡이 거절됐습니다.")
+            
+            msg = button_interaction.message
+            embed = msg.embeds[0]
+            embed.title = f"{interaction.user.global_name}님의 {'후반' if 전반후반 else '전반'}곡 거절"
+            embed.color = discord.Color.red()
+            await msg.edit(embed= embed, view= None)
+
+        async def accept_callback(button_interaction: discord.Interaction):
+            await interaction.channel.send(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡이 승인됐습니다.")
+            
+            msg = button_interaction.message
+            embed = msg.embeds[0]
+            embed.title = f"{interaction.user.global_name}님의 {'후반' if 전반후반 else '전반'}곡 수락"
+            embed.color = discord.Color.green()
+            await msg.edit(embed= embed, view= None)
+         
+        deny_button = discord.ui.Button(style=discord.ButtonStyle.danger, label="거절")
+        accept_button = discord.ui.Button(style=discord.ButtonStyle.success, label="수락")
+        
+        view = discord.ui.View()
+        view.add_item(deny_button)
+        view.add_item(accept_button)
+        
+        deny_button.callback = draw_callback
+        accept_button.callback = accept_callback
+                
+        embed = discord.Embed(
+            title=f"{interaction.user.global_name}님의 {'후반' if 전반후반 else '전반'}곡 신청",
+            color=discord.Color.blue()
+        )
+        
+        embed.add_field(name="곡 정보", value=f"{곡명} / {곡레벨}", inline=True)
+        embed.add_field(name="패널티", value=f"{패널티}", inline=True)
+        
+        master:User = self.bot.master_player
+        await master.member.send(embed=embed, view=view)
+        
+        await interaction.response.send_message(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡을 {곡명}/{곡레벨}/{패널티}로 신청됏습니다.", ephemeral=True)
 
 
     @app_commands.command(name="상태확인", description="지금 내 상태를 조회합니다.")

@@ -21,7 +21,6 @@ class Prepare(commands.Cog):
         if not name in self.bot.playerlist:
             self.bot.playerlist.append(name)
             await interaction.response.send_message(f"{name}님을 플레이어로 등록했습니다.")
-            await interaction.response.send_message(f"현재 등록된 플레이어는 {self.bot.playerlist}, 진행자는 {self.bot.master_player.name}입니다.")
         else:
             await interaction.response.send_message(f"{name}님은 이미 등록된 플레이어입니다.", ephemeral=True)
     
@@ -31,7 +30,7 @@ class Prepare(commands.Cog):
      
         if not self.bot.master_player and self.bot.current_phase == config.Phase.READY:
             
-            self.bot.master_player = User(ctx.author.global_name)
+            self.bot.master_player = User(ctx)
             await ctx.send(f"{ctx.author.global_name}님을 진행자로 등록했습니다.")
             await ctx.send(f"현재 등록된 플레이어는 {self.bot.playerlist}, 진행자는 {self.bot.master_player.name}입니다.")
         else:
