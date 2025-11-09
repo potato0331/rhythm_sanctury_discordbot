@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from models import Player, RoundSong, User
+from models import Player, RoundSong
 import random
 import asyncio 
 import config 

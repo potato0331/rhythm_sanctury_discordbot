@@ -1,5 +1,6 @@
 from discord.ext import commands
 from discord import app_commands
+import discord
 from models import User
 import config
 
@@ -9,15 +10,20 @@ class Prepare(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name='플레이어등록')
-    async def _register_player(self, ctx: commands.Context):
+    @app_commands.command(name='플레이어등록', description="연말정산에 참가합니다.")
+    async def _register_player(self, interaction: discord.Interaction):
+        name = interaction.user.global_name
         
-        if not ctx.author.global_name in self.bot.playerlist and self.bot.current_phase == config.Phase.READY:
-            self.bot.playerlist.append(ctx.author.global_name)
-            await ctx.send(f"{ctx.author.global_name}님을 플레이어로 등록했습니다.")
-            await ctx.send(f"현재 등록된 플레이어는 {self.bot.playerlist}, 진행자는 {self.bot.master_player.name}입니다.")
+        if self.bot.current_phase != config.Phase.READY:
+            await interaction.response.send_message(f"현재는 등록할 수 없습니다.", ephemeral=True)
+            return
+        
+        if not name in self.bot.playerlist:
+            self.bot.playerlist.append(name)
+            await interaction.response.send_message(f"{name}님을 플레이어로 등록했습니다.")
+            await interaction.response.send_message(f"현재 등록된 플레이어는 {self.bot.playerlist}, 진행자는 {self.bot.master_player.name}입니다.")
         else:
-            await ctx.send(f"{ctx.author.global_name}님은 이미 등록된 플레이어입니다.")
+            await interaction.response.send_message(f"{name}님은 이미 등록된 플레이어입니다.", ephemeral=True)
     
 
     @commands.command(name='진행자등록')
