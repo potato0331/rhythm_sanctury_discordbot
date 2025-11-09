@@ -10,10 +10,9 @@ import random
 class CardDraw(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.__deck_reset()
-
 
     def __deck_reset(self):
+        """덱이 0장일 때 덱을 리필하는 함수"""
         for card in card_list.CARDS: #덱 리셋
             for i in range(card.card_count):
                 self.bot.card_deck.append(card)
@@ -21,7 +20,7 @@ class CardDraw(commands.Cog):
 
 
     async def card_reveal(self, interaction: discord.Interaction, card: Card):
-        #카드 공표용 엠베드 제작
+        """카드 공표용 엠베드 제작"""
         embed = discord.Embed()
 
         embed.set_author(name=interaction.user.global_name, icon_url=interaction.user.avatar.url)
@@ -43,10 +42,11 @@ class CardDraw(commands.Cog):
         return embed
 
     async def communist(self, interaction: discord.Interaction, player: Player):
-        
+        """공산당 효과 함수"""
         card = card_list.CARDS[random.randint(1,50) - 1]
 
         async def draw_button_callback(button_interaction: discord.Interaction):
+            """다시 뽑기시 메세지 삭제 후 함수 재호출"""
             if button_interaction.user.global_name != self.bot.master_player.name:
                 await button_interaction.response.send_message("당신은 이 버튼을 누를 수 없습니다.", ephemeral=True)
                 return
@@ -56,6 +56,7 @@ class CardDraw(commands.Cog):
             await self.communist(interaction, player)
 
         async def accept_button_callback(button_interaction: discord.Interaction):
+            """카드 확정시 효과 적용"""
             if button_interaction.user.global_name != self.bot.master_player.name:
                 await button_interaction.response.send_message("당신은 이 버튼을 누를 수 없습니다.", ephemeral=True)
                 return
@@ -69,7 +70,7 @@ class CardDraw(commands.Cog):
             await interaction.followup.send(content = "확정된 카드는...", embed = embed)
             await interaction.message.delete()
 
-        
+
         draw_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="다시뽑기")
         accept_button = discord.ui.Button(style=discord.ButtonStyle.success, label="확정하기")
 
@@ -85,11 +86,49 @@ class CardDraw(commands.Cog):
         communist_message = await interaction.followup.send(content = "카드를 뽑습니다!", embed = embed, view=view)
         interaction.message = communist_message #메세지 재지정(새로 보낸 메세지로)
 
+    async def target_choose(self, interaction: discord.Interaction, player:Player):
+        """대상 선택 버튼을 만드는 함수"""
+        async def player_button_callback(button_interaction: discord.Interaction):
+            if button_interaction.user.global_name != player.name:
+                await button_interaction.response.send_message("당신은 이 버튼을 누를 수 없습니다.", ephemeral=True)
+                return
+            
+            await button_interaction.response.defer()
+            
+            await interaction.message.delete()
+
+        view = discord.ui.View()     
+        for player in self.bot.player_status:
+            button = discord.ui.Button(style=discord.ButtonStyle.success, label=player.name)
+            button.callback = player_button_callback
+            view.add_item(button)
+
+        message = await interaction.followup.send(content = "대상을 지정해 주세요.", view=view)
+        interaction.message = message 
 
 
     async def card_effect(self, interaction: discord.Interaction, card: Card, player: Player):
-        #카드 태그별로 효과적용하는 함수 (배팅 가산값은 적용하지 않음.)
-        match card.effect_tag:
+        """카드 태그별로 효과적용하는 함수 (배팅 가산값은 적용하지 않음.)"""
+        if config.Tag.TARGET in card.effect_tag:
+            player = self.target_choose(interaction, player)
+
+        if config.Tag.EFFECT in card.effect_tag:
+            await interaction.followup.send(f"효과를 얼마나 적용할지 진행자에게 말해주세요.")
+            return
+
+        if config.Tag.SHARED in card.effect_tag:
+            self.bot.master_player.effect_list.append(card.effect_name)
+            await interaction.followup.send(f"공통 효과입니다. 이번 라운드에 모두에게 적용됩니다.")
+            return
+
+        if config.Tag.ALL in card.effect_tag:
+            for player in self.bot.player_status:
+                player.effect_list.append(card.effect_name)
+            await interaction.followup.send(f"전체 효과입니다. 이번 라운드에 모두에게 적용됩니다.")
+            return
+
+        #위 태그가 없는 것 중, 자동화 한 것들
+        match card.effect_name:
             case "효과해제":
                 player.effect_list.clear()
                 await interaction.followup.send(f"{player.name}님의 효과를 전부 제거했습니다.")
@@ -98,7 +137,7 @@ class CardDraw(commands.Cog):
                 player.coin += 6
                 await interaction.followup.send(f"{player.name}님이 6코인을 획득했습니다.")
 
-            case "(대상랜덤)배율2":
+            case "배율2":
                 if len(self.bot.player_status) < 2:
                         await interaction.followup.send("효과 발동 실패: 소매넣기할 다른 플레이어가 없습니다.")
                         return
@@ -139,7 +178,7 @@ class CardDraw(commands.Cog):
                 await self.communist(interaction, player)
       
             case _: #그 외 전부
-                player.effect_list.append(card.effect_tag)
+                player.effect_list.append(card.effect_name)
 
         
 

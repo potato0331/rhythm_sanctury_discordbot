@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 from models import Player, User, Card
 import config 
-import pickle # ◀◀ 1. pickle 임포트
-import os     # ◀◀ 2. os 임포트 (파일 확인용)
+import pickle
+import os 
 
 SAVE_FILE = config.SAVE_FILE
 
@@ -57,7 +57,6 @@ class ResetGame(commands.Cog):
         
     def save_game_state(self):
         try:
-
             game_state = {
                 "player_status": self.bot.player_status,
                 "current_round": self.bot.current_round,

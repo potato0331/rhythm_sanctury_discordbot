@@ -1,10 +1,11 @@
 class Card:
-    def __init__(self, id: int, name: str, type: int, description: str, image_file: str, effect_tag: str, betting_value: int, card_count: int):
+    def __init__(self, id: int, name: str, type: int, description: str, image_file: str, effect_name: str, betting_value: int, card_count: int, effect_tag: list ):
         self.id = id
         self.name = name
         self.type = type #메리트=1, 리스크=2, 패널티=3
         self.description = description
-        self.effect_tag = effect_tag #player.effectlist에 추가할 내용
+        self.effect_name = effect_name #player.effectlist에 추가할 내용
+        self.effect_tag = effect_tag
         self.image_file = image_file
         self.betting_value = betting_value
         self.card_count = card_count
@@ -25,6 +26,7 @@ class User:
     def __init__(self, name: str):
         self.name: str = name
         self.songs = [None, None]
+        self.effect_list: list[str] = []
 
 
     def __repr__(self) -> str:
@@ -35,6 +37,7 @@ class User:
             f"{self.name}\n"
             f"  first_half={self.songs[0]}\n"
             f"  second_half={self.songs[1]}\n"
+            f"  effect_list={self.effect_list}"
         )   
 
 class Player:

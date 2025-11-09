@@ -112,6 +112,7 @@ class GameMaster(commands.Cog):
                 status.round_multiplier += status.saved_pension + random_multiplier
                 status.saved_pension = 0
         await ctx.send("--------------------------------")
+        self.bot.masterplayer.effect_list = [] #공통효과 초기화
 
         # 마지막 라운드인지 확인
         if self.bot.current_round == self.bot.total_round:

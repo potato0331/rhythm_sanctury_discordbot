@@ -14,6 +14,13 @@ CARD_PRICE = 4
 BOT_TOKEN = ""
 SAVE_FILE = "game_state.pkl"
 
+class Tag(Enum):
+    TARGET = 1 #무언가 대상을 지정해야 하는 경우
+    EFFECT = 2 #효과에 무언가 지정해야하는 것이 있는 경우
+    SHARED = 3 #77.77등 라운드 자체에 적용돼는 효과들
+    ALL = 4 #효과룰렛처럼 모든 플레이어를 대상으로 적용돼는 효과들
+    
+
 class Phase(Enum):
     READY = 0
     PREPARE = 1
