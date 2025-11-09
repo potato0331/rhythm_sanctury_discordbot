@@ -13,7 +13,7 @@ class CardDraw(commands.Cog):
 
     def __deck_reset(self):
         """덱이 0장일 때 덱을 리필하는 함수"""
-        for card in card_list.CARDS: #덱 리셋
+        for card in card_list.CARDS:
             for i in range(card.card_count):
                 self.bot.card_deck.append(card)
         random.shuffle(self.bot.card_deck)
@@ -103,8 +103,10 @@ class CardDraw(commands.Cog):
         if config.Tag.TARGET in card.effect_tag:
             target_player = await self.target_choose(player, interaction) 
             if target_player == None:
-                await interaction.followup.send(f"대상이 지정돼지 않았습니다. 오류가 발생했습니다.")
-                return 
+                await interaction.followup.send("대상이 지정돼지 않았습니다. 오류가 발생했습니다.")
+                return
+            await interaction.followup.send(f"{target_player.name}님이 대상으로 지정돼었습니다!")
+            player = target_player
 
         if config.Tag.EFFECT in card.effect_tag:
             await interaction.followup.send(f"효과를 얼마나 적용할지 진행자에게 말해주세요.")

@@ -20,74 +20,53 @@ class GamePlayer(commands.Cog):
             await interaction.response.send_message(f"아직 게임이 시작하지 않았거나, 이미 시작했습니다.")
             return
 
-        my_status = self.__find_Player(interaction.user.global_name)
+        player = self.__find_Player(interaction.user.global_name)
 
-        if my_status == None:
+        if player == None:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
             return
-       
-        my_status.songs[전반후반] = RoundSong(곡명, 곡레벨, 패널티)
                 
-        async def draw_callback(button_interaction: discord.Interaction):
-            await interaction.channel.send(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡이 거절됐습니다.")
-            
-            msg = button_interaction.message
-            embed = msg.embeds[0]
-            embed.title = f"{interaction.user.global_name}님의 {'후반' if 전반후반 else '전반'}곡 거절"
-            embed.color = discord.Color.red()
-            await msg.edit(embed= embed, view= None)
-
-        async def accept_callback(button_interaction: discord.Interaction):
-            await interaction.channel.send(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡이 승인됐습니다.")
-            
-            msg = button_interaction.message
-            embed = msg.embeds[0]
-            embed.title = f"{interaction.user.global_name}님의 {'후반' if 전반후반 else '전반'}곡 수락"
-            embed.color = discord.Color.green()
-            await msg.edit(embed= embed, view= None)
-         
-        deny_button = discord.ui.Button(style=discord.ButtonStyle.danger, label="거절")
-        accept_button = discord.ui.Button(style=discord.ButtonStyle.success, label="수락")
-        
-        view = discord.ui.View()
-        view.add_item(deny_button)
-        view.add_item(accept_button)
-        
-        deny_button.callback = draw_callback
-        accept_button.callback = accept_callback
+        view = SongRegisterView()
+        view.add_item(SongRegisterButton(style=discord.ButtonStyle.danger, label="거절"))
+        view.add_item(SongRegisterButton(style=discord.ButtonStyle.success, label="수락"))
                 
         embed = discord.Embed(
             title=f"{interaction.user.global_name}님의 {'후반' if 전반후반 else '전반'}곡 신청",
             color=discord.Color.blue()
         )
-        
         embed.add_field(name="곡 정보", value=f"{곡명} / {곡레벨}", inline=True)
         embed.add_field(name="패널티", value=f"{패널티}", inline=True)
         
         master:User = self.bot.master_player
         await master.member.send(embed=embed, view=view)
-        
-        await interaction.response.send_message(f"{my_status.name}님의 {'후반' if 전반후반 else '전반'}전 곡을 {곡명}/{곡레벨}/{패널티}로 신청됏습니다.", ephemeral=True)
+        await interaction.response.send_message(f"{player.name}님의 {'후반' if 전반후반 else '전반'}전 곡을 {곡명}/{곡레벨}/{패널티}로 신청했습니다.", ephemeral=True)
 
+        await view.wait()
+
+        if view.selected_label == "수락":
+            player.songs[전반후반] = RoundSong(곡명, 곡레벨, 패널티)
+            await interaction.channel.send(f"{player.name}님의 {'후반' if 전반후반 else '전반'}전 곡이 승인됐습니다.")
+        else:
+            await interaction.channel.send(f"{player.name}님의 {'후반' if 전반후반 else '전반'}전 곡이 거절됐습니다.")
 
     @app_commands.command(name="상태확인", description="지금 내 상태를 조회합니다.")
     async def _check_status(self, interaction: discord.Interaction):
-        my_status = 0
+        player = 0
 
         for status in self.bot.player_status:
             if status.name == interaction.user.global_name:
-                my_status = status
+                player = status
                 break
 
-        if my_status == 0:
+        if player == 0:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
         else:
             await interaction.response.send_message("------------------------------\n"
                                                     f"{interaction.user.global_name}님\n"
-                                                    f"코인 보유량: {my_status.coin}\n"
-                                                    f"현재 배율: {my_status.round_multiplier}\n"
-                                                    f"현재 점수: {my_status.score}\n"
-                                                    f"이번 라운드 효과: {my_status.effect_list}\n"
+                                                    f"코인 보유량: {player.coin}\n"
+                                                    f"현재 배율: {player.round_multiplier}\n"
+                                                    f"현재 점수: {player.score}\n"
+                                                    f"이번 라운드 효과: {player.effect_list}\n"
                                                     "------------------------------\n",ephemeral = True)
 
 
@@ -101,12 +80,12 @@ class GamePlayer(commands.Cog):
             await interaction.response.send_message("지금은 점수를 등록할 수 없습니다.")
             return
 
-        my_status = self.__find_Player(interaction.user.global_name)
+        player = self.__find_Player(interaction.user.global_name)
 
-        if my_status == None:
+        if player == None:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
         else:
-            my_status.round_score = 점수
+            player.round_score = 점수
             await interaction.response.send_message(f"{interaction.user.global_name}님이 {점수}점을 등록했습니다.")
 
 
@@ -120,9 +99,9 @@ class GamePlayer(commands.Cog):
             await interaction.response.send_message("지금은 베팅할 수 없습니다.")
             return
 
-        my_status = self.__find_Player(interaction.user.global_name)
+        player = self.__find_Player(interaction.user.global_name)
 
-        if my_status == None:
+        if player == None:
             await interaction.response.send_message(f"{interaction.user.global_name}님은 플레이어가 아닙니다. 또는 알 수 없는 오류가 발생했습니다.",ephemeral = True)
             return
         
@@ -130,18 +109,18 @@ class GamePlayer(commands.Cog):
             await interaction.response.send_message(f"잘못된 배팅입니다. 배팅은 1코인부터 15코인까지 가능합니다",ephemeral = True)
             return
         
-        if 배팅액 > 5 and self.bot.roundplayer.name == my_status.name:
+        if 배팅액 > 5 and self.bot.roundplayer.name == player.name:
             await interaction.response.send_message(f"잘못된 배팅입니다. 라운드플레이어는 5코인까지만 베팅할 수 있습니다.",ephemeral = True)
             return
         
-        if 배팅액 - my_status.betting > my_status.coin:
+        if 배팅액 - player.betting > player.coin:
             await interaction.response.send_message(f"코인이 부족합니다.",ephemeral = True)
             return
         
-        my_status.coin -= 배팅액 - my_status.betting
-        my_status.betting = 배팅액
+        player.coin -= 배팅액 - player.betting
+        player.betting = 배팅액
 
-        await interaction.response.send_message(f"{my_status.name}님이 배팅을 완료했습니다.")
+        await interaction.response.send_message(f"{player.name}님이 배팅을 완료했습니다.")
         
 
        
@@ -184,6 +163,29 @@ class GamePlayer(commands.Cog):
                 result = status
                 break
         return result
+    
+class SongRegisterButton(discord.ui.Button):
+    """자신의 상위 view에 자신의 label을 반환하는 버튼"""
+    def __init__(self, label:str, **kwargs):
+        super().__init__(label = label,  **kwargs)
+        self.label = label
+
+    async def callback(self, button_interaction: discord.Interaction):
+        view = self.view
+        view.selected_label = self.label
+        msg = button_interaction.message
+        embed = msg.embeds[0]
+        embed.color = discord.Color.green()
+        await msg.edit(embed= embed, view= None)
+        view.stop()
+        await button_interaction.response.defer() 
+
+class SongRegisterView(discord.ui.View):
+    """위 songRegisterButton의 반환값을 받기 위한 view"""
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.selected_label = None
+
 
 #여기서부터 건들지 말 것
     @commands.Cog.listener()
