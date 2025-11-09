@@ -43,7 +43,7 @@ class CardDraw(commands.Cog):
 
     async def communist(self, interaction: discord.Interaction, player: Player):
         """공산당 효과 함수"""
-        card = card_list.CARDS[random.randint(1,50) - 1]
+        card = random.choice(card_list.CARDS)
 
         async def draw_button_callback(button_interaction: discord.Interaction):
             """다시 뽑기시 메세지 삭제 후 함수 재호출"""
