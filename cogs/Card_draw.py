@@ -86,31 +86,24 @@ class CardDraw(commands.Cog):
         communist_message = await interaction.followup.send(content = "카드를 뽑습니다!", embed = embed, view=view)
         interaction.message = communist_message #메세지 재지정(새로 보낸 메세지로)
 
-    async def target_choose(self, interaction: discord.Interaction, player:Player):
+    async def target_choose(self, player:Player, interaction: discord.Interaction):
         """대상 선택 버튼을 만드는 함수"""
-        async def player_button_callback(button_interaction: discord.Interaction):
-            if button_interaction.user.global_name != player.name:
-                await button_interaction.response.send_message("당신은 이 버튼을 누를 수 없습니다.", ephemeral=True)
-                return
-            
-            await button_interaction.response.defer()
-            
-            await interaction.message.delete()
 
-        view = discord.ui.View()     
-        for player in self.bot.player_status:
-            button = discord.ui.Button(style=discord.ButtonStyle.success, label=player.name)
-            button.callback = player_button_callback
-            view.add_item(button)
-
+        view = TargetSelectView(player, self.bot.player_status)   
         message = await interaction.followup.send(content = "대상을 지정해 주세요.", view=view)
-        interaction.message = message 
+
+        await view.wait()
+        await message.delete()
+        
+        return view.selected_player
 
 
     async def card_effect(self, interaction: discord.Interaction, card: Card, player: Player):
         """카드 태그별로 효과적용하는 함수 (배팅 가산값은 적용하지 않음.)"""
         if config.Tag.TARGET in card.effect_tag:
-            player = self.target_choose(interaction, player)
+            player = await self.target_choose()
+            if player == None:
+                await interaction.followup.send(f"대상이 지정돼지 않았습니다. 오류가 발생했습니다.")
 
         if config.Tag.EFFECT in card.effect_tag:
             await interaction.followup.send(f"효과를 얼마나 적용할지 진행자에게 말해주세요.")
@@ -217,9 +210,31 @@ class CardDraw(commands.Cog):
         player.round_multiplier += card.betting_value
         await self.card_effect(interaction, card, player)
 
-        
-       
 
+class PlayerButton(discord.ui.Button):
+    """플레이어 이름을 라벨과 값으로 가지는 커스텀 버튼(target_choose함수용)"""
+    def __init__(self, player: Player):
+        super().__init__(label=player.name, style=discord.ButtonStyle.secondary)
+        self.player = player
+
+    async def callback(self, button_interaction: discord.Interaction):
+        view = self.view
+        if button_interaction.user.global_name != view.author_player.name:
+            await button_interaction.response.send_message("당신은 이 버튼을 누를 수 없습니다.", ephemeral=True)
+            return
+        view.selected_player = self.player
+        view.stop()
+        await button_interaction.response.defer() 
+
+class TargetSelectView(discord.ui.View):
+    """플레이어 버튼들을 보여주는 View"""
+    def __init__(self, author_player: Player, players: list[Player], **kwargs):
+        super().__init__(**kwargs)
+        self.selected_player = None
+
+        for player in players:
+            self.add_item(PlayerButton(player_name=player.name))
+       
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(CardDraw(bot))
