@@ -101,9 +101,10 @@ class CardDraw(commands.Cog):
     async def card_effect(self, interaction: discord.Interaction, card: Card, player: Player):
         """카드 태그별로 효과적용하는 함수 (배팅 가산값은 적용하지 않음.)"""
         if config.Tag.TARGET in card.effect_tag:
-            player = await self.target_choose()
-            if player == None:
+            target_player = await self.target_choose(player, interaction) 
+            if target_player == None:
                 await interaction.followup.send(f"대상이 지정돼지 않았습니다. 오류가 발생했습니다.")
+                return 
 
         if config.Tag.EFFECT in card.effect_tag:
             await interaction.followup.send(f"효과를 얼마나 적용할지 진행자에게 말해주세요.")
@@ -231,9 +232,10 @@ class TargetSelectView(discord.ui.View):
     def __init__(self, author_player: Player, players: list[Player], **kwargs):
         super().__init__(**kwargs)
         self.selected_player = None
+        self.author_player = author_player
 
         for player in players:
-            self.add_item(PlayerButton(player_name=player.name))
+            self.add_item(PlayerButton(player=player))
        
 
 async def setup(bot: commands.Bot):

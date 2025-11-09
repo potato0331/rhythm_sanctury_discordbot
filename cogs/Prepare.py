@@ -12,7 +12,7 @@ class Prepare(commands.Cog):
     @commands.command(name='플레이어등록')
     async def _register_player(self, ctx: commands.Context):
         
-        if self.bot.playerlist.count(ctx.author.global_name) == 0 and self.bot.current_phase == config.Phase.READY:
+        if not ctx.author.global_name in self.bot.playerlist and self.bot.current_phase == config.Phase.READY:
             self.bot.playerlist.append(ctx.author.global_name)
             await ctx.send(f"{ctx.author.global_name}님을 플레이어로 등록했습니다.")
             await ctx.send(f"현재 등록된 플레이어는 {self.bot.playerlist}, 진행자는 {self.bot.master_player.name}입니다.")

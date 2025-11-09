@@ -133,6 +133,9 @@ class GamePlayer(commands.Cog):
                 # 각 플레이어의 정보를 필드로 추가합니다.
                 embed.add_field(name=f"👤 {status.name}", value=effects_str, inline=True) 
 
+        effects_str = "\n".join(self.bot.master_player.effect_list) if self.bot.master_player.effect_list else "적용된 효과 없음"
+        embed.add_field(name=f"⭐공통효과", value=effects_str, inline=True) 
+
         await interaction.response.send_message(embed=embed)
     
     def __find_Player(self, name):
