@@ -25,9 +25,9 @@ class RoundSong:
         return f"{self.song_name}/{self.song_level}/{self.round_penalty}"
     
 class User:
-    def __init__(self, ctx: commands.Context):
-        self.member :Member = ctx.author
-        self.name: str = self.member.global_name
+    def __init__(self, author_id: int, author_name: str):
+        self.id: int = author_id                 
+        self.name: str = author_name             
         self.songs = [None, None]
         self.effect_list: list[str] = []
 
