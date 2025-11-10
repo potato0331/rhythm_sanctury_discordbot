@@ -37,7 +37,7 @@ class GamePlayer(commands.Cog):
         embed.add_field(name="곡 정보", value=f"{곡명} / {곡레벨}", inline=True)
         embed.add_field(name="패널티", value=f"{패널티}", inline=True)
         
-        master = await self.bot.fetch_user(master.id)
+        master = await self.bot.fetch_user(self.bot.master_player.id)
         await master.send(embed=embed, view=view)
         await interaction.response.send_message(f"{player.name}님의 {'후반' if 전반후반 else '전반'}전 곡을 {곡명}/{곡레벨}/{패널티}로 신청했습니다.", ephemeral=True)
 
