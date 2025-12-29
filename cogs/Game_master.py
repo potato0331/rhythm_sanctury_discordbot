@@ -76,7 +76,6 @@ class GameMaster(commands.Cog):
         self.bot.roundplayer = self.bot.player_deck.pop()
         
         await self.song_reveal(ctx, self.bot.roundplayer.name, self.bot.roundplayer.songs[0],False)
-        print(2)
 
         self.bot.current_phase = config.Phase.BETTING
         await ctx.send("각자 `/배팅` 명령어로 배팅액을 등록해주세요.")
