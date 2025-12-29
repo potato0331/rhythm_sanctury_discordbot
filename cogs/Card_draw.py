@@ -32,12 +32,10 @@ class CardDraw(commands.Cog):
         else:
             embed.color=discord.Color.red()
 
-        if(card.image_file != ""):
-            embed.set_image(url=card.image_file)
-        else:
-            embed.title = f"{card.name}"
-            embed.add_field(name="효과", value=card.description, inline=True)
-            embed.add_field(name="가산값", value=str(card.betting_value), inline=True)
+        embed.set_image(url=card.image_file)
+        embed.title = f"{card.name}"
+        embed.add_field(name="효과", value=card.description, inline=True)
+        embed.add_field(name="가산값", value=str(card.betting_value), inline=True)
         
         return embed
 
